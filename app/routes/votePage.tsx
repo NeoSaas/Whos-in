@@ -53,11 +53,12 @@ export default function VotePage() {
   const [name, setName] = useState("");
   const [response, setResponse] = useState<string | null>(null);
   const [showNameInput, setShowNameInput] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState(60 * 60); // 1 hour in seconds
+  const [timeRemaining, setTimeRemaining] = useState(60 * 60); // Default to 1 hour in seconds
   const [event, setEvent] = useState<any>(null);
   const [loading, setLoading] = useState(!!eventId);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isExpired, setIsExpired] = useState(false);
   const [attendees, setAttendees] = useState<any[]>([]);
   const [creatorId, setCreatorId] = useState<string | null>(null);
 
@@ -96,6 +97,22 @@ export default function VotePage() {
         if (eventSnapshot.exists()) {
           // Transform Firestore data to match our expected format
           const eventData = eventSnapshot.data();
+          
+          // Calculate time remaining based on creation timestamp
+          if (eventData.createdAt) {
+            const createdAtTime = new Date(eventData.createdAt).getTime();
+            const currentTime = Date.now();
+            const elapsedTimeInSeconds = Math.floor((currentTime - createdAtTime) / 1000);
+            const oneHourInSeconds = 60 * 60;
+            const remainingSeconds = Math.max(0, oneHourInSeconds - elapsedTimeInSeconds);
+            
+            setTimeRemaining(remainingSeconds);
+            
+            // Set expired flag if more than an hour has passed
+            if (remainingSeconds <= 0) {
+              setIsExpired(true);
+            }
+          }
 
           // Format the date and time
           const dateStr = new Date(eventData.date).toLocaleDateString('en-US', {
@@ -103,6 +120,7 @@ export default function VotePage() {
             month: 'long',
             day: 'numeric'
           });
+          
           setCreatorId(eventData.creatorId);
           setEvent({
             id: eventId,
@@ -132,10 +150,16 @@ export default function VotePage() {
 
   // Countdown timer effect
   useEffect(() => {
+    if (timeRemaining <= 0) {
+      setIsExpired(true);
+      return;
+    }
+    
     const timer = setInterval(() => {
       setTimeRemaining(prevTime => {
         if (prevTime <= 1) {
           clearInterval(timer);
+          setIsExpired(true);
           return 0;
         }
         return prevTime - 1;
@@ -144,7 +168,7 @@ export default function VotePage() {
 
     // Cleanup timer on component unmount
     return () => clearInterval(timer);
-  }, []);
+  }, [timeRemaining]);
 
   // Format time remaining as hh:mm:ss
   const formatTimeRemaining = () => {
@@ -156,7 +180,7 @@ export default function VotePage() {
   };
 
   const handleResponse = (status: string) => {
-    if (isSubmitting) return; // Prevent multiple submissions
+    if (isSubmitting || isExpired) return; // Prevent submissions if expired
     setResponse(status);
     setShowNameInput(true);
   };
@@ -251,6 +275,29 @@ export default function VotePage() {
       });
   };
 
+  // Modify the countdown timer display to show expired message when needed
+  const renderCountdown = () => {
+    return (
+      <div className="text-center mb-6">
+        {isExpired ? (
+          <>
+            <p className="text-sm text-red-500 dark:text-red-400 mb-1">This link has expired</p>
+            <p className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500">
+              00:00:00
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">This link will expire in:</p>
+            <p className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500">
+              {formatTimeRemaining()}
+            </p>
+          </>
+        )}
+      </div>
+    );
+  };
+
   // Show loading state
   if (loading) {
     return (
@@ -317,37 +364,35 @@ export default function VotePage() {
           </p>
 
           {/* Countdown Timer */}
-          <div className="text-center mb-6">
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">This link will expire in:</p>
-            <p className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500">
-              {formatTimeRemaining()}
-            </p>
-          </div>
+          {renderCountdown()}
 
           {/* RSVP Buttons */}
           {!showNameInput ? (
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 onClick={() => handleResponse("in")}
-                disabled={isSubmitting}
-                className={`px-8 py-4 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-                  }`}
+                disabled={isSubmitting || isExpired}
+                className={`px-8 py-4 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${
+                  isSubmitting || isExpired ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               >
                 I'm In! 👍
               </button>
               <button
                 onClick={() => handleResponse("maybe")}
-                disabled={isSubmitting}
-                className={`px-8 py-4 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-                  }`}
+                disabled={isSubmitting || isExpired}
+                className={`px-8 py-4 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${
+                  isSubmitting || isExpired ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               >
                 Maybe 🤔
               </button>
               <button
                 onClick={() => handleResponse("out")}
-                disabled={isSubmitting}
-                className={`px-8 py-4 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-                  }`}
+                disabled={isSubmitting || isExpired}
+                className={`px-8 py-4 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${
+                  isSubmitting || isExpired ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               >
                 Can't Make It 👎
               </button>
