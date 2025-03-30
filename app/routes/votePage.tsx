@@ -28,6 +28,7 @@ export default function VotePage() {
   const [loading, setLoading] = useState(!!eventId);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [attendees, setAttendees] = useState<any[]>([]);
 
   // Fetch event data if we have an eventId
   useEffect(() => {
@@ -80,8 +81,10 @@ export default function VotePage() {
             time: eventData.time, // Use the time string directly
             location: eventData.place,
             description: eventData.description,
-            attendees: eventData.attendees || []
+            attendees: eventData.attendees || [],
+            createdAt: eventData.createdAt
           });
+          setAttendees(eventData.attendees || []);
         } else {
           setError("Event not found");
         }
@@ -168,6 +171,8 @@ export default function VotePage() {
             await updateDoc(eventRef, {
               attendees: updatedAttendees
             });
+
+            setAttendees(updatedAttendees);
           }
         }
       } catch (err) {
@@ -362,7 +367,7 @@ export default function VotePage() {
                 <span className="mr-2">👍</span> Going
               </h3>
               <ul className="space-y-4">
-                {event.attendees
+                {attendees
                   .filter((a: any) => a.status === "in")
                   .map((attendee: any, index: number) => (
                     <li key={index} className="flex items-center gap-2">
@@ -378,7 +383,7 @@ export default function VotePage() {
                 <span className="mr-2">🤔</span> Maybe
               </h3>
               <ul className="space-y-4">
-                {event.attendees
+                {attendees
                   .filter((a: any) => a.status === "maybe")
                   .map((attendee: any, index: number) => (
                     <li key={index} className="flex items-center gap-2">
@@ -394,7 +399,7 @@ export default function VotePage() {
                 <span className="mr-2">👎</span> Can't Make It
               </h3>
               <ul className="space-y-4">
-                {event.attendees
+                {attendees
                   .filter((a: any) => a.status === "out")
                   .map((attendee: any, index: number) => (
                     <li key={index} className="flex items-center gap-2">

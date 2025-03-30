@@ -160,7 +160,8 @@ export default function CreateEvent() {
       emoji: formData.get("emoji") as string || "🎉",
       description: formData.get("description") as string,
       private: formData.get("private") === "on",
-      attendees: [] // Initialize empty attendees array
+      attendees: [], // Initialize empty attendees array
+      createdAt: new Date().toISOString(),
     };
     
     try {
