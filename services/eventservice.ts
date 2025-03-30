@@ -1,6 +1,29 @@
 import { db } from "../firebaseconfig"; // Import the Firebase db instance
 import { doc, setDoc } from "firebase/firestore"; // Import Firestore methods
 
+// Function to generate or retrieve user ID
+export const getOrCreateUserId = async (): Promise<string> => {
+  // Check local storage first
+  let userId = localStorage.getItem('userId');
+  
+  if (!userId) {
+    // Generate a new user ID
+    userId = crypto.randomUUID();
+    
+    // Store in local storage
+    localStorage.setItem('userId', userId);
+    
+    // Create a user document in Firestore
+    const userRef = doc(db, "users", userId);
+    await setDoc(userRef, {
+      createdAt: new Date().toISOString(),
+      lastActive: new Date().toISOString()
+    });
+  }
+  
+  return userId;
+};
+
 // Define the interface for the event data
 interface EventData {
   name: string;
@@ -10,16 +33,26 @@ interface EventData {
   emoji: string;
   description: string;
   private: boolean;
+  creatorId?: string; // Add creatorId to EventData
 }
 
 // Function to create an event in Firebase Firestore
 export const createEvent = async (eventData: EventData): Promise<string> => {
   try {
+    // Get or create user ID
+    const userId = await getOrCreateUserId();
+    
+    // Add creatorId to event data
+    const eventWithCreator = {
+      ...eventData,
+      creatorId: userId
+    };
+
     // Create a reference to the Firestore collection for events
     const eventRef = doc(db, "events", Date.now().toString()); // Using timestamp as unique event ID
 
     // Add event data to Firestore
-    await setDoc(eventRef, eventData);
+    await setDoc(eventRef, eventWithCreator);
 
     // Return the event ID (timestamp in this case)
     return eventRef.id;
