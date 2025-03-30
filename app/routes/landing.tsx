@@ -1,5 +1,7 @@
 import { Link } from "react-router";
 import type { Route } from "./+types/landing";
+import { useState, useEffect } from "react";
+import { getEvents } from "../../services/eventservice";
 
 export function meta({ }: Route.MetaArgs) {
     return [
@@ -9,6 +11,23 @@ export function meta({ }: Route.MetaArgs) {
 }
 
 export default function Landing() {
+    const [publicEvents, setPublicEvents] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchPublicEvents = async () => {
+            try {
+                const allEvents = await getEvents();
+                // Filter for public events only and take the first 3
+                const publicEvents = allEvents.filter((event: any) => !event.private).slice(0, 3);
+                setPublicEvents(publicEvents);
+            } catch (error) {
+                console.error("Error fetching public events:", error);
+            }
+        };
+
+        fetchPublicEvents();
+    }, []);
+
     return (
         <main className="min-h-screen bg-gradient-to-b from-pink-100 via-purple-100 to-indigo-100 dark:from-pink-950 dark:via-purple-950 dark:to-indigo-950 pt-24">
             <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
@@ -79,96 +98,45 @@ export default function Landing() {
                         
                         {/* Timeline-style event listing */}
                         <div className="border-l-4 border-indigo-200 dark:border-indigo-800 pl-8 ml-4 md:ml-12 space-y-16">
-                            {/* Event 1 */}
-                            <div className="relative">
-                                <div className="absolute -left-[42px] w-16 h-16 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center border-4 border-indigo-200 dark:border-indigo-800">
-                                    <span className="text-2xl">🎮</span>
-                                </div>
-                                
-                                <div className="flex flex-col md:flex-row justify-between md:items-center gap-6 ml-10">
-                                    <div>
-                                        <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Gaming Night</h3>
-                                        <div className="mt-2 flex flex-col md:flex-row gap-4 text-gray-600 dark:text-gray-400">
-                                            <div className="flex items-center">
-                                                <span className="mr-2 text-indigo-500">📅</span> Friday at 8:00 PM
+                            {publicEvents.map((event, index) => (
+                                <div key={event.id} className="relative">
+                                    <div className="absolute -left-[42px] w-16 h-16 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center border-4 border-indigo-200 dark:border-indigo-800">
+                                        <span className="text-2xl">{event.emoji || "🎉"}</span>
+                                    </div>
+                                    
+                                    <div className="flex flex-col md:flex-row justify-between md:items-center gap-6 ml-10">
+                                        <div>
+                                            <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">{event.name}</h3>
+                                            <div className="mt-2 flex flex-col md:flex-row gap-4 text-gray-600 dark:text-gray-400">
+                                                <div className="flex items-center">
+                                                    <span className="mr-2 text-indigo-500">📅</span> {event.date}
+                                                </div>
+                                                <div className="flex items-center">
+                                                    <span className="mr-2 text-indigo-500">🕒</span> {event.time}
+                                                </div>
+                                                <div className="flex items-center">
+                                                    <span className="mr-2 text-indigo-500">📍</span> {event.place}
+                                                </div>
                                             </div>
-                                            <div className="flex items-center">
-                                                <span className="mr-2 text-indigo-500">📍</span> Online - Discord
-                                            </div>
+                                            {event.description && (
+                                                <p className="mt-2 text-gray-600 dark:text-gray-400">{event.description}</p>
+                                            )}
+                                        </div>
+                                        <div className="flex gap-4 items-center">
+                                            <Link 
+                                                to={`/event/${event.id}`}
+                                                className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg shadow-sm transition-all"
+                                            >
+                                                Join
+                                            </Link>
                                         </div>
                                     </div>
-                                    <div className="flex gap-4 items-center">
-                                        <div className="bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 px-3 py-1 rounded-full text-sm">
-                                            12 attending
-                                        </div>
-                                        <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg shadow-sm transition-all">
-                                            Join
-                                        </button>
-                                    </div>
                                 </div>
-                            </div>
-                            
-                            {/* Event 2 */}
-                            <div className="relative">
-                                <div className="absolute -left-[42px] w-16 h-16 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center border-4 border-indigo-200 dark:border-indigo-800">
-                                    <span className="text-2xl">🎭</span>
-                                </div>
-                                
-                                <div className="flex flex-col md:flex-row justify-between md:items-center gap-6 ml-10">
-                                    <div>
-                                        <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Movie Screening</h3>
-                                        <div className="mt-2 flex flex-col md:flex-row gap-4 text-gray-600 dark:text-gray-400">
-                                            <div className="flex items-center">
-                                                <span className="mr-2 text-indigo-500">📅</span> Saturday at 7:30 PM
-                                            </div>
-                                            <div className="flex items-center">
-                                                <span className="mr-2 text-indigo-500">📍</span> Central Park
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="flex gap-4 items-center">
-                                        <div className="bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 px-3 py-1 rounded-full text-sm">
-                                            24 attending
-                                        </div>
-                                        <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg shadow-sm transition-all">
-                                            Join
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            {/* Event 3 */}
-                            <div className="relative">
-                                <div className="absolute -left-[42px] w-16 h-16 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center border-4 border-indigo-200 dark:border-indigo-800">
-                                    <span className="text-2xl">🍕</span>
-                                </div>
-                                
-                                <div className="flex flex-col md:flex-row justify-between md:items-center gap-6 ml-10">
-                                    <div>
-                                        <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Pizza Meetup</h3>
-                                        <div className="mt-2 flex flex-col md:flex-row gap-4 text-gray-600 dark:text-gray-400">
-                                            <div className="flex items-center">
-                                                <span className="mr-2 text-indigo-500">📅</span> Sunday at 1:00 PM
-                                            </div>
-                                            <div className="flex items-center">
-                                                <span className="mr-2 text-indigo-500">📍</span> Downtown Plaza
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="flex gap-4 items-center">
-                                        <div className="bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 px-3 py-1 rounded-full text-sm">
-                                            8 attending
-                                        </div>
-                                        <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg shadow-sm transition-all">
-                                            Join
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            ))}
                         </div>
                         
                         <div className="mt-16 text-center">
-                            <Link to="/events" className="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-medium text-lg group">
+                            <Link to="/public" className="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-medium text-lg group">
                                 See all public events 
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:translate-x-1 transition-transform">
                                     <path d="M5 12h14"></path>
