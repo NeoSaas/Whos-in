@@ -27,6 +27,7 @@ export default function VotePage() {
   const [event, setEvent] = useState<any>(null);
   const [loading, setLoading] = useState(!!eventId);
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch event data if we have an eventId
   useEffect(() => {
@@ -121,13 +122,16 @@ export default function VotePage() {
   };
 
   const handleResponse = (status: string) => {
+    if (isSubmitting) return; // Prevent multiple submissions
     setResponse(status);
     setShowNameInput(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would submit to a backend
+    if (isSubmitting) return; // Prevent multiple submissions
+    
+    setIsSubmitting(true);
     const displayName = name.trim() ? name : "Anonymous user";
     
     if (eventId) {
@@ -140,24 +144,39 @@ export default function VotePage() {
         if (eventSnapshot.exists()) {
           const eventData = eventSnapshot.data();
           
-          // Update attendees array
-          const updatedAttendees = [
-            ...(eventData.attendees || []),
-            { name: displayName, status: response }
-          ];
+          // Check if user has already responded
+          const existingResponse = eventData.attendees?.find(
+            (a: any) => a.name === displayName
+          );
           
-          // Update the document with new attendee
-          await updateDoc(eventRef, {
-            attendees: updatedAttendees
-          });
+          if (existingResponse) {
+            // Update existing response
+            const updatedAttendees = eventData.attendees.map((a: any) =>
+              a.name === displayName ? { ...a, status: response } : a
+            );
+            
+            await updateDoc(eventRef, {
+              attendees: updatedAttendees
+            });
+          } else {
+            // Add new response
+            const updatedAttendees = [
+              ...(eventData.attendees || []),
+              { name: displayName, status: response }
+            ];
+            
+            await updateDoc(eventRef, {
+              attendees: updatedAttendees
+            });
+          }
         }
       } catch (err) {
         console.error("Error updating event:", err);
       }
     }
     
-    // For demo purposes, we'll just show confirmation
     setShowNameInput(false);
+    setIsSubmitting(false);
   };
 
   // Generate the invite link based on window location and event ID
@@ -261,19 +280,28 @@ export default function VotePage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button 
                 onClick={() => handleResponse("in")}
-                className="px-8 py-4 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1"
+                disabled={isSubmitting}
+                className={`px-8 py-4 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${
+                  isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               >
                 I'm In! 👍
               </button>
               <button 
                 onClick={() => handleResponse("maybe")}
-                className="px-8 py-4 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1"
+                disabled={isSubmitting}
+                className={`px-8 py-4 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${
+                  isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               >
                 Maybe 🤔
               </button>
               <button 
                 onClick={() => handleResponse("out")}
-                className="px-8 py-4 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1"
+                disabled={isSubmitting}
+                className={`px-8 py-4 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${
+                  isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               >
                 Can't Make It 👎
               </button>
@@ -288,23 +316,31 @@ export default function VotePage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Enter your name (optional)"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  disabled={isSubmitting}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
                 />
               </div>
               <div className="flex flex-row gap-4">
                 <button
                   type="submit"
-                  className="w-full px-8 py-4 rounded-xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1"
+                  disabled={isSubmitting}
+                  className={`w-full px-8 py-4 rounded-xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${
+                    isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
                 >
-                  Submit
+                  {isSubmitting ? 'Submitting...' : 'Submit'}
                 </button>
                 <button
                   type="button"
                   onClick={() => {
                     setShowNameInput(false);
                     setResponse(null);
+                    setIsSubmitting(false);
                   }}
-                  className="w-full px-8 py-4 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium text-lg transition-all hover:shadow-lg"
+                  disabled={isSubmitting}
+                  className={`w-full px-8 py-4 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium text-lg transition-all hover:shadow-lg ${
+                    isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
                 >
                   Cancel
                 </button>
