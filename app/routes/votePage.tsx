@@ -59,6 +59,7 @@ export default function VotePage() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [attendees, setAttendees] = useState<any[]>([]);
+  const [creatorId, setCreatorId] = useState<string | null>(null);
 
   // Fetch event data if we have an eventId
   useEffect(() => {
@@ -102,7 +103,7 @@ export default function VotePage() {
             month: 'long', 
             day: 'numeric' 
           });
-          
+          setCreatorId(eventData.creatorId);
           setEvent({
             id: eventId,
             title: eventData.name,
@@ -161,6 +162,7 @@ export default function VotePage() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    
     e.preventDefault();
     if (isSubmitting) return; // Prevent multiple submissions
     
@@ -169,6 +171,11 @@ export default function VotePage() {
     
     // Get or create user ID
     const userId = await getOrCreateUserId();
+    if (userId && creatorId && userId === creatorId) {
+      alert("You cannot RSVP to your own event.");
+      setIsSubmitting(false);
+      return;
+    }
     
     if (eventId) {
       try {
