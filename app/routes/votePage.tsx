@@ -130,6 +130,8 @@ export default function VotePage() {
     fetchEvent();
   }, [eventId]);
 
+  console.log(creatorId);
+
   // Countdown timer effect
   useEffect(() => {
     const timer = setInterval(() => {
