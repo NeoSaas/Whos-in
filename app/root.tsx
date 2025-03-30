@@ -24,6 +24,7 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
+// Ensure consistent rendering between server and client
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">

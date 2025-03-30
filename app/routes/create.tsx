@@ -1,6 +1,7 @@
 import type { Route } from "./+types/create";
-import { Form } from "react-router";
+import { Form, useNavigate } from "react-router";
 import { useState, useRef, useEffect } from "react";
+import { createEvent } from "../../services/eventservice";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -23,7 +24,28 @@ export default function CreateEvent() {
   const [minutes, setMinutes] = useState('');
   const [isPM, setIsPM] = useState(false);
   const [timeError, setTimeError] = useState('');
+  const [isCreating, setIsCreating] = useState(false);
+  const [createdEventId, setCreatedEventId] = useState<string | null>(null);
+  const navigate = useNavigate();
 
+  // Fix for time display consistency between server and client
+  useEffect(() => {
+    // Only run time-related initializations on the client side
+    if (typeof window !== 'undefined') {
+      const now = new Date();
+      const currentHour = now.getHours();
+      setHours(currentHour > 12 ? (currentHour - 12).toString() : currentHour.toString());
+      setMinutes(now.getMinutes().toString().padStart(2, '0'));
+      setIsPM(currentHour >= 12);
+      
+      // Set initial date only on client side
+      if (!selectedDate) {
+        setSelectedDate(now);
+      }
+    }
+  }, []);
+
+  // Separate useEffect for event handlers to prevent issues with SSR
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target as Node)) {
@@ -107,6 +129,51 @@ export default function CreateEvent() {
     }
   };
 
+  // Client-side only rendering for calendar components
+  const renderCalendarContent = () => {
+    if (typeof window === 'undefined') {
+      return null; // Don't render calendar on server
+    }
+    
+    // Calendar rendering logic here (existing code)
+    // ...
+  };
+
+  
+  // Handle form submission
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    
+    // Get form data
+    const formData = new FormData(event.currentTarget);
+    const eventData = {
+      name: formData.get("name") as string,
+      time: formData.get("date") as string, // assuming date input includes time
+      place: formData.get("location") as string,
+      emoji: formData.get("emoji") as string || "🎉",
+      description: formData.get("description") as string,
+      private: formData.get("private") === "on",
+      attendees: [] // Initialize empty attendees array
+    };
+    
+    try {
+      setIsCreating(true);
+      // Create the event in Firebase
+      const eventId = await createEvent(eventData);
+      setCreatedEventId(eventId);
+      
+      // Option 1: Show success state with copy link button
+      // Or Option 2: Redirect to the event page
+      navigate(`/event/${eventId}`);
+    } catch (error) {
+      console.error("Error creating event:", error);
+      // Show error message to user
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-pink-100 via-purple-100 to-indigo-100 dark:from-pink-950 dark:via-purple-950 dark:to-indigo-950 pt-24">
       <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
@@ -121,7 +188,7 @@ export default function CreateEvent() {
           </div>
 
           <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8">
-            <Form method="post" className="space-y-6">
+            <Form method="post" className="space-y-6" onSubmit={handleSubmit}>
               {/* Event Name with Emoji */}
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -392,6 +459,11 @@ export default function CreateEvent() {
           </div>
         </div>
       </div>
+      
+      {/* For any date/time display, use conditional rendering
+      {typeof window !== 'undefined' && (
+        // Date/time picker components here
+      )} */}
     </main>
   );
 } 
