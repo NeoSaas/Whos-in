@@ -55,10 +55,10 @@ export default function About() {
             </h2>
             <p className="text-gray-600 dark:text-gray-400 text-center mb-6 flex justify-center items-center flex-col gap-4">
               <a href="https://www.neosaas.net" className="text-blue-500 hover:text-blue-600">www.neosaas.net</a>
-              <a href="https://www.neosaas.net/about" className="text-blue-500 hover:text-blue-600"><FaGithub size={24} /></a>
-              <a href="https://www.neosaas.net/contact" className="text-blue-500 hover:text-blue-600"><FaLinkedin size={24} /></a>
-              <a href="https://www.neosaas.net/blog" className="text-blue-500 hover:text-blue-600"><FaXTwitter size={24} /></a>
-              <a href="https://www.neosaas.net/careers" className="text-blue-500 hover:text-blue-600"><FaInstagram size={24} /></a>
+              <a href="https://github.com/NeoSaas" className="text-blue-500 hover:text-blue-600"><FaGithub size={24} /></a>
+              <a href="https://www.linkedin.com/company/neosaas/" className="text-blue-500 hover:text-blue-600"><FaLinkedin size={24} /></a>
+              <a href="https://x.com/neosaas1" className="text-blue-500 hover:text-blue-600"><FaXTwitter size={24} /></a>
+              <a href="https://www.instagram.com/neo.saas/" className="text-blue-500 hover:text-blue-600"><FaInstagram size={24} /></a>
             </p>
           </div>
 
