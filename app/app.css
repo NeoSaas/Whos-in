@@ -15,6 +15,12 @@ body {
   }
 }
 
+/* Selection styles */
+::selection {
+  background-color: rgba(59, 130, 246, 0.5);
+  color: inherit;
+}
+
 /* Custom Animations */
 @keyframes float {
   0% {
