@@ -4,7 +4,8 @@ import { doc, setDoc } from "firebase/firestore"; // Import Firestore methods
 // Define the interface for the event data
 interface EventData {
   name: string;
-  time: string;
+  date: string; // ISO date string
+  time: string; // Time in 12-hour format (e.g., "8:00 PM")
   place: string;
   emoji: string;
   description: string;

@@ -146,9 +146,16 @@ export default function CreateEvent() {
     
     // Get form data
     const formData = new FormData(event.currentTarget);
+    
+    // Format the time string
+    const formattedHours = hours.padStart(2, '0');
+    const formattedMinutes = minutes.padStart(2, '0');
+    const timeString = `${formattedHours}:${formattedMinutes} ${isPM ? 'PM' : 'AM'}`;
+    
     const eventData = {
       name: formData.get("name") as string,
-      time: formData.get("date") as string, // assuming date input includes time
+      date: selectedDate?.toISOString().split('T')[0] || '', // Get date in YYYY-MM-DD format
+      time: timeString, // Time in 12-hour format
       place: formData.get("location") as string,
       emoji: formData.get("emoji") as string || "🎉",
       description: formData.get("description") as string,
@@ -162,8 +169,7 @@ export default function CreateEvent() {
       const eventId = await createEvent(eventData);
       setCreatedEventId(eventId);
       
-      // Option 1: Show success state with copy link button
-      // Or Option 2: Redirect to the event page
+      // Navigate to the event page
       navigate(`/event/${eventId}`);
     } catch (error) {
       console.error("Error creating event:", error);
