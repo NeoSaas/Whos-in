@@ -5,7 +5,6 @@ export default [
   index("routes/landing.tsx"),
   route('create', "routes/create.tsx"),
   route('events', "routes/events.tsx"),
-  route('votePage', "routes/votePage.tsx"),
   route('about', "routes/about.tsx"),
   route('event/:eventId', "routes/votePage.tsx")
 ] satisfies RouteConfig;

@@ -1,5 +1,5 @@
 import { db } from "../firebaseconfig"; // Import the Firebase db instance
-import { doc, setDoc } from "firebase/firestore"; // Import Firestore methods
+import { doc, setDoc, collection, getDocs } from "firebase/firestore"; // Import Firestore methods
 
 // Function to generate or retrieve user ID
 export const getOrCreateUserId = async (): Promise<string> => {
@@ -61,6 +61,25 @@ export const createEvent = async (eventData: EventData): Promise<string> => {
       throw new Error(`Error creating event: ${error.message}`);
     } else {
       throw new Error('An unknown error occurred while creating the event');
+    }
+  }
+};
+
+// Function to get all events from Firestore
+export const getEvents = async (): Promise<any[]> => {
+  try {
+    const eventsCollection = collection(db, "events");
+    const eventsSnapshot = await getDocs(eventsCollection);
+    
+    return eventsSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Error fetching events: ${error.message}`);
+    } else {
+      throw new Error('An unknown error occurred while fetching events');
     }
   }
 };
