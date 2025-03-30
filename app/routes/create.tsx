@@ -27,6 +27,7 @@ export default function CreateEvent() {
   const [isCreating, setIsCreating] = useState(false);
   const [createdEventId, setCreatedEventId] = useState<string | null>(null);
   const navigate = useNavigate();
+  const [isPrivate, setIsPrivate] = useState(false);
 
   // Fix for time display consistency between server and client
   useEffect(() => {
@@ -453,6 +454,40 @@ export default function CreateEvent() {
                   className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                   placeholder="e.g., Zoom, Local Park, Friend's House"
                 />
+              </div>
+
+              {/* Privacy Toggle */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Event Visibility
+                </label>
+                <div className="relative w-40 h-10 bg-gray-100 dark:bg-gray-900 rounded-full p-1">
+                  <div className="relative w-full h-full">
+                    <input
+                      type="checkbox"
+                      id="private"
+                      name="private"
+                      className="hidden"
+                      onChange={() => setIsPrivate(!isPrivate)}
+                    />
+                    <div 
+                      className="absolute inset-0 flex items-center justify-between px-4 cursor-pointer"
+                      onClick={() => setIsPrivate(!isPrivate)}
+                    >
+                      <span className={`z-10 text-sm font-medium ${!isPrivate ? 'text-white' : 'text-gray-500 dark:text-gray-400'}`}>
+                        Public
+                      </span>
+                      <span className={`z-10 text-sm font-medium ${isPrivate ? 'text-white' : 'text-gray-500 dark:text-gray-400'}`}>
+                        Private
+                      </span>
+                    </div>
+                    <div 
+                      className={`absolute top-1 bottom-1 w-1/2 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-full transition-all transform ${
+                        isPrivate ? 'translate-x-full' : 'translate-x-0'
+                      }`}
+                    />
+                  </div>
+                </div>
               </div>
 
               {/* Submit Button */}
