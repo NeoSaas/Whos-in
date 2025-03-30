@@ -5,6 +5,7 @@ import { useParams } from "react-router";
 import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseconfig";
 import type { MetaFunction } from "react-router";
+import { EventExportButton } from '../components/EventExportButton';
 
 export namespace Route {
   export type MetaArgs = Parameters<MetaFunction>[0];
@@ -469,6 +470,7 @@ export default function VotePage() {
           <a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Privacy</a>
         </div>
       </footer>
+      <EventExportButton eventId={eventId} />
     </main>
   );
 }
