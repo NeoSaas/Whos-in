@@ -2,38 +2,16 @@ import { Link } from "react-router";
 
 export function Header() {
   return (
-    <header className="bg-white dark:bg-gray-800 shadow-sm">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <Link to="/landing" className="flex items-center gap-2">
-            <span className="text-2xl">🎉</span>
-            <span className="font-display text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500">
-              Who's In
-            </span>
-          </Link>
-          
-          <nav className="flex items-center gap-6">
-            <Link 
-              to="/landing" 
-              className="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-            >
-              Home
-            </Link>
-            <Link 
-              to="/create" 
-              className="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-            >
-              Create Event
-            </Link>
-            <Link 
-              to="/events" 
-              className="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-            >
-              My Events
-            </Link>
-          </nav>
+    <nav className="flex flex-row justify-between items-center absolute top-0 left-0 right-0 z-10">
+      <div className="container mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-row justify-between items-center">
+        <Link to="/" className="font-bold text-2xl flex flex-row items-center font-display justify-center"><img src="/logo_white_no_background.png" alt="Who's In Logo" className="w-32 h-32 mr-2 " /></Link>
+        <div className="flex items-center gap-4">
+          <Link to="/" className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors text-2xl">Create Event</Link>
+          <Link to="/about" className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors text-2xl">Public Events</Link>
+          <Link to="/events" className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors text-2xl">My Events</Link>
+          <Link to="/about" className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors text-2xl">About</Link>
         </div>
       </div>
-    </header>
+    </nav>
   );
 } 
