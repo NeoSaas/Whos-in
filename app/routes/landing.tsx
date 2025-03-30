@@ -1,4 +1,5 @@
 import type { Route } from "./+types/landing";
+import { Link } from "react-router";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -24,9 +25,11 @@ export default function Landing() {
           
           {/* Simplified Action */}
           <div className="w-full max-w-md mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 mb-8">
-            <button className="w-full py-4 rounded-xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 mb-4">
-              Create Event in Seconds!
-            </button>
+            <Link to="/create" className="block">
+              <button className="w-full py-4 rounded-xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 mb-4">
+                Create Event in Seconds!
+              </button>
+            </Link>
             <p className="text-gray-500 dark:text-gray-400 text-sm">No account needed! 100% anonymous.</p>
           </div>
         </section>
