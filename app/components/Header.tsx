@@ -7,7 +7,7 @@ export function Header() {
         <Link to="/" className="font-bold text-2xl flex flex-row items-center font-display justify-center"><img src="/logo_white_no_background.png" alt="Who's In Logo" className="w-32 h-32 mr-2 " /></Link>
         <div className="flex items-center gap-4">
           <Link to="/create" className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors text-2xl">Create Event</Link>
-          <Link to="/about" className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors text-2xl">Public Events</Link>
+          <Link to="/public" className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors text-2xl">Public Events</Link>
           <Link to="/events" className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors text-2xl">My Events</Link>
           <Link to="/about" className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors text-2xl">About</Link>
         </div>

@@ -190,7 +190,7 @@ export default function Landing() {
                             Create an event, share the link, see who's in. That's it!
                         </p>
                         <button className="px-8 py-4 rounded-xl bg-white text-indigo-600 font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1">
-                            Start Now — No Sign Up!
+                            <Link to="/create">Start Now — No Sign Up!</Link>
                         </button>
                     </div>
                 </section>
