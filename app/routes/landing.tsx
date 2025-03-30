@@ -167,7 +167,7 @@ export default function Landing() {
                 <footer className="py-12 text-center text-gray-600 dark:text-gray-400">
                     <p>Made @ NeoSaas by Muq, Aaron, and Ayaan</p>
                     <div className="flex justify-center gap-4 mt-4">
-                        <a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">About</a>
+                        <a href="/about" className="hover:text-indigo-600 dark:hover:text-indigo-400">About</a>
                     </div>
                 </footer>
             </div>

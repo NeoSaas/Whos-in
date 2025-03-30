@@ -1,4 +1,6 @@
 import { Link } from "react-router";
+import { FaGithub, FaLinkedin, FaTwitter, FaInstagram } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 
 export function meta() {
   return [
@@ -23,7 +25,9 @@ export default function About() {
 
           <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 mb-8">
             <div className="text-center mb-8">
-              <img src="/logo_white_no_background.png" alt="Who's In Logo" className="w-32 h-32 mx-auto mb-6" />
+              <div className="flex justify-center mb-6 ">
+                <img src="/logo_white_no_background.png" alt="Who's In Logo" className="w-32 h-32 mx-auto bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-xl" />
+              </div>
               <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">
                 Who's In?
               </h2>
@@ -39,7 +43,22 @@ export default function About() {
             </h2>
             <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
               NeoSaas is a tech startup focused on creating innovative solutions for modern businesses. 
-              We believe in building tools that make people's lives easier and more efficient.
+              We believe in building tools that make people's lives easier and more efficient. Whos In? is a side project of a few of us at NeoSaas.
+              We're a team of 3 software engineers who are passionate about Computer science and wanted to build something fun, free and maybe even useful.
+
+            </p>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 mb-8 justify-center items-center">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6 text-center">
+              Check out our other projects and more about us
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 text-center mb-6 flex justify-center items-center flex-col gap-4">
+              <a href="https://www.neosaas.net" className="text-blue-500 hover:text-blue-600">www.neosaas.net</a>
+              <a href="https://www.neosaas.net/about" className="text-blue-500 hover:text-blue-600"><FaGithub size={24} /></a>
+              <a href="https://www.neosaas.net/contact" className="text-blue-500 hover:text-blue-600"><FaLinkedin size={24} /></a>
+              <a href="https://www.neosaas.net/blog" className="text-blue-500 hover:text-blue-600"><FaXTwitter size={24} /></a>
+              <a href="https://www.neosaas.net/careers" className="text-blue-500 hover:text-blue-600"><FaInstagram size={24} /></a>
             </p>
           </div>
 
