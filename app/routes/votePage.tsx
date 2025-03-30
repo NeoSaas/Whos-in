@@ -64,24 +64,19 @@ export default function VotePage() {
           // Transform Firestore data to match our expected format
           const eventData = eventSnapshot.data();
           
-          // Handle possible date formatting issues for SSR
-          let dateStr, timeStr;
-          try {
-            const eventDate = new Date(eventData.time);
-            dateStr = eventDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-            timeStr = eventDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-          } catch (e) {
-            // Fallback if date parsing fails
-            dateStr = "Date TBD";
-            timeStr = "Time TBD";
-          }
+          // Format the date and time
+          const dateStr = new Date(eventData.date).toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            month: 'long', 
+            day: 'numeric' 
+          });
           
           setEvent({
             id: eventId,
             title: eventData.name,
             emoji: eventData.emoji || "🎉",
             date: dateStr,
-            time: timeStr,
+            time: eventData.time, // Use the time string directly
             location: eventData.place,
             description: eventData.description,
             attendees: eventData.attendees || []
