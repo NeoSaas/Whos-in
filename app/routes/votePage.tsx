@@ -4,6 +4,12 @@ import type { Route } from "./+types/votePage";
 import { useParams } from "react-router";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebaseconfig";
+import type { MetaFunction } from "react-router";
+
+export namespace Route {
+  export type MetaArgs = Parameters<MetaFunction>[0];
+  export type LoaderData = {};
+}
 
 export function meta({ }: Route.MetaArgs) {
   return [
@@ -57,15 +63,27 @@ export default function VotePage() {
         if (eventSnapshot.exists()) {
           // Transform Firestore data to match our expected format
           const eventData = eventSnapshot.data();
+          
+          // Handle possible date formatting issues for SSR
+          let dateStr, timeStr;
+          try {
+            const eventDate = new Date(eventData.time);
+            dateStr = eventDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+            timeStr = eventDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+          } catch (e) {
+            // Fallback if date parsing fails
+            dateStr = "Date TBD";
+            timeStr = "Time TBD";
+          }
+          
           setEvent({
             id: eventId,
             title: eventData.name,
             emoji: eventData.emoji || "🎉",
-            date: new Date(eventData.time).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }),
-            time: new Date(eventData.time).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+            date: dateStr,
+            time: timeStr,
             location: eventData.place,
             description: eventData.description,
-            host: eventData.host || "Anonymous",
             attendees: eventData.attendees || []
           });
         } else {
@@ -149,6 +167,11 @@ export default function VotePage() {
 
   // Generate the invite link based on window location and event ID
   const generateInviteLink = () => {
+    if (typeof window === 'undefined') {
+      // Server-side rendering safe version
+      return `/event/${event?.id || 'demo123'}`;
+    }
+    // Client-side version with full URL
     const baseUrl = window.location.origin;
     return `${baseUrl}/event/${event?.id || 'demo123'}`;
   };
