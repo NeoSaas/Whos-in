@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import type { Route } from "./+types/landing";
+import { Link } from "react-router";
 
 export function meta({ }: Route.MetaArgs) {
     return [
