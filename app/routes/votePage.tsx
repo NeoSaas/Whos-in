@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { useState, useEffect } from "react";
 import type { Route } from "./+types/votePage";
 import { useParams } from "react-router";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseconfig";
 import type { MetaFunction } from "react-router";
 
@@ -16,6 +16,35 @@ export function meta({ }: Route.MetaArgs) {
     { title: "Event RSVP - Who's In?" },
     { name: "description", content: "Let everyone know if you're in for this event!" },
   ];
+}
+
+// Function to generate or retrieve user ID
+const getOrCreateUserId = async (): Promise<string> => {
+  // Check local storage first
+  let userId = localStorage.getItem('attendeeId');
+  
+  if (!userId) {
+    // Generate a new user ID
+    userId = crypto.randomUUID();
+    
+    // Store in local storage
+    localStorage.setItem('attendeeId', userId);
+    
+    // Create a user document in Firestore
+    const userRef = doc(db, "attendees", userId);
+    await setDoc(userRef, {
+      createdAt: new Date().toISOString(),
+      lastActive: new Date().toISOString()
+    });
+  }
+  
+  return userId;
+};
+
+interface Attendee {
+  userId: string;
+  name: string;
+  status: string;
 }
 
 export default function VotePage() {
@@ -137,6 +166,9 @@ export default function VotePage() {
     setIsSubmitting(true);
     const displayName = name.trim() ? name : "Anonymous user";
     
+    // Get or create user ID
+    const userId = await getOrCreateUserId();
+    
     if (eventId) {
       try {
         // Get a reference to the event document
@@ -149,13 +181,13 @@ export default function VotePage() {
           
           // Check if user has already responded
           const existingResponse = eventData.attendees?.find(
-            (a: any) => a.name === displayName
+            (a: any) => a.userId === userId
           );
           
           if (existingResponse) {
             // Update existing response
             const updatedAttendees = eventData.attendees.map((a: any) =>
-              a.name === displayName ? { ...a, status: response } : a
+              a.userId === userId ? { ...a, name: displayName, status: response } : a
             );
             
             await updateDoc(eventRef, {
@@ -165,7 +197,11 @@ export default function VotePage() {
             // Add new response
             const updatedAttendees = [
               ...(eventData.attendees || []),
-              { name: displayName, status: response }
+              { 
+                userId: userId,
+                name: displayName, 
+                status: response 
+              }
             ];
             
             await updateDoc(eventRef, {
