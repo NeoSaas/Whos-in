@@ -13,7 +13,7 @@ export default function PublicEvents() {
   const [events, setEvents] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalEvents, setTotalEvents] = useState(0);
-  const eventsPerPage = 5;
+  const eventsPerPage = 6; // Changed to 6 to make it divisible by 2
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -42,7 +42,7 @@ export default function PublicEvents() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-pink-100 via-purple-100 to-indigo-100 dark:from-pink-950 dark:via-purple-950 dark:to-indigo-950 pt-24">
       <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="font-display text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 mb-4">
               Public Events
@@ -59,31 +59,35 @@ export default function PublicEvents() {
               </div>
             ) : (
               <>
-                <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {events.map((event) => (
                     <div key={event.id} className="bg-gray-50 dark:bg-gray-700 rounded-2xl p-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                          <span className="text-3xl">{event.emoji || "🎉"}</span>
-                          <div>
-                            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">{event.name}</h3>
-                            <div className="flex items-center space-x-4 text-gray-600 dark:text-gray-400">
-                              <span>📅 {event.date}</span>
-                              <span>🕒 {event.time}</span>
-                              <span>📍 {event.place}</span>
+                      <div className="flex flex-col h-full">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center space-x-4">
+                            <span className="text-3xl">{event.emoji || "🎉"}</span>
+                            <div>
+                              <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">{event.name}</h3>
+                              <div className="flex flex-wrap items-center gap-2 text-gray-600 dark:text-gray-400">
+                                <span>📅 {event.date}</span>
+                                <span>🕒 {event.time}</span>
+                                <span>📍 {event.place}</span>
+                              </div>
                             </div>
                           </div>
                         </div>
-                        <Link 
-                          to={`/event/${event.id}`}
-                          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
-                        >
-                          Join
-                        </Link>
+                        {event.description && (
+                          <p className="text-gray-600 dark:text-gray-400 mb-4 flex-grow">{event.description}</p>
+                        )}
+                        <div className="mt-auto">
+                          <Link 
+                            to={`/event/${event.id}`}
+                            className="w-full inline-block text-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
+                          >
+                            Join
+                          </Link>
+                        </div>
                       </div>
-                      {event.description && (
-                        <p className="mt-4 text-gray-600 dark:text-gray-400">{event.description}</p>
-                      )}
                     </div>
                   ))}
                 </div>
