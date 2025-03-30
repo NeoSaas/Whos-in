@@ -5,7 +5,7 @@ import { useParams } from "react-router";
 import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseconfig";
 import type { MetaFunction } from "react-router";
-import { EventExportButton } from '../components/EventExportButton';
+import { SocialShareImage } from "../components/SocialShareImage";
 
 export namespace Route {
   export type MetaArgs = Parameters<MetaFunction>[0];
@@ -23,14 +23,14 @@ export function meta({ }: Route.MetaArgs) {
 const getOrCreateUserId = async (): Promise<string> => {
   // Check local storage first
   let userId = localStorage.getItem('attendeeId');
-  
+
   if (!userId) {
     // Generate a new user ID
     userId = crypto.randomUUID();
-    
+
     // Store in local storage
     localStorage.setItem('attendeeId', userId);
-    
+
     // Create a user document in Firestore
     const userRef = doc(db, "attendees", userId);
     await setDoc(userRef, {
@@ -38,7 +38,7 @@ const getOrCreateUserId = async (): Promise<string> => {
       lastActive: new Date().toISOString()
     });
   }
-  
+
   return userId;
 };
 
@@ -77,10 +77,10 @@ export default function VotePage() {
           host: "Alex",
           attendees: [
             { name: "Taylor", status: "in", },
-            { name: "Jordan", status: "in"},
-            { name: "Casey", status: "maybe"},
-            { name: "Riley", status: "out"},
-            { name: "Anonymous user", status: "in"}
+            { name: "Jordan", status: "in" },
+            { name: "Casey", status: "maybe" },
+            { name: "Riley", status: "out" },
+            { name: "Anonymous user", status: "in" }
           ]
         });
         setLoading(false);
@@ -92,16 +92,16 @@ export default function VotePage() {
         // Fetch event data from Firestore
         const eventRef = doc(db, "events", eventId);
         const eventSnapshot = await getDoc(eventRef);
-        
+
         if (eventSnapshot.exists()) {
           // Transform Firestore data to match our expected format
           const eventData = eventSnapshot.data();
-          
+
           // Format the date and time
-          const dateStr = new Date(eventData.date).toLocaleDateString('en-US', { 
-            weekday: 'long', 
-            month: 'long', 
-            day: 'numeric' 
+          const dateStr = new Date(eventData.date).toLocaleDateString('en-US', {
+            weekday: 'long',
+            month: 'long',
+            day: 'numeric'
           });
           setCreatorId(eventData.creatorId);
           setEvent({
@@ -130,8 +130,6 @@ export default function VotePage() {
     fetchEvent();
   }, [eventId]);
 
-  console.log(creatorId);
-
   // Countdown timer effect
   useEffect(() => {
     const timer = setInterval(() => {
@@ -143,17 +141,17 @@ export default function VotePage() {
         return prevTime - 1;
       });
     }, 1000);
-    
+
     // Cleanup timer on component unmount
     return () => clearInterval(timer);
   }, []);
-  
+
   // Format time remaining as hh:mm:ss
   const formatTimeRemaining = () => {
     const hours = Math.floor(timeRemaining / 3600);
     const minutes = Math.floor((timeRemaining % 3600) / 60);
     const seconds = timeRemaining % 60;
-    
+
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
@@ -164,13 +162,13 @@ export default function VotePage() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    
+
     e.preventDefault();
     if (isSubmitting) return; // Prevent multiple submissions
-    
+
     setIsSubmitting(true);
     const displayName = name.trim() ? name : "Anonymous user";
-    
+
     // Get or create user ID
     const userId = await getOrCreateUserId();
     if (userId && creatorId && userId === creatorId) {
@@ -178,28 +176,28 @@ export default function VotePage() {
       setIsSubmitting(false);
       return;
     }
-    
+
     if (eventId) {
       try {
         // Get a reference to the event document
         const eventRef = doc(db, "events", eventId);
-        
+
         // Get current event data
         const eventSnapshot = await getDoc(eventRef);
         if (eventSnapshot.exists()) {
           const eventData = eventSnapshot.data();
-          
+
           // Check if user has already responded
           const existingResponse = eventData.attendees?.find(
             (a: any) => a.userId === userId
           );
-          
+
           if (existingResponse) {
             // Update existing response
             const updatedAttendees = eventData.attendees.map((a: any) =>
               a.userId === userId ? { ...a, name: displayName, status: response } : a
             );
-            
+
             await updateDoc(eventRef, {
               attendees: updatedAttendees
             });
@@ -207,13 +205,13 @@ export default function VotePage() {
             // Add new response
             const updatedAttendees = [
               ...(eventData.attendees || []),
-              { 
+              {
                 userId: userId,
-                name: displayName, 
-                status: response 
+                name: displayName,
+                status: response
               }
             ];
-            
+
             await updateDoc(eventRef, {
               attendees: updatedAttendees
             });
@@ -225,7 +223,7 @@ export default function VotePage() {
         console.error("Error updating event:", err);
       }
     }
-    
+
     setShowNameInput(false);
     setIsSubmitting(false);
   };
@@ -240,7 +238,7 @@ export default function VotePage() {
     const baseUrl = window.location.origin;
     return `${baseUrl}/event/${event?.id || 'demo123'}`;
   };
-  
+
   // Handle copying the invite link
   const handleCopyLink = () => {
     const link = generateInviteLink();
@@ -290,18 +288,18 @@ export default function VotePage() {
           </Link>
         </div>
       </nav>
-      
+
       <div className="container mx-auto px-4 py-4 sm:px-6 lg:px-8">
         {/* Event Details Card */}
         <section className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl mb-8">
           <div className="flex items-center justify-center h-24 w-24 mx-auto rounded-2xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white text-5xl font-bold mb-6">
             {event.emoji}
           </div>
-          
+
           <h1 className="font-display text-3xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-4">
             {event.title}
           </h1>
-          
+
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-gray-600 dark:text-gray-400 mb-6">
             <div className="flex items-center">
               <span className="mr-2">📅</span> {event.date}
@@ -313,11 +311,11 @@ export default function VotePage() {
               <span className="mr-2">📍</span> {event.location}
             </div>
           </div>
-          
+
           <p className="text-center text-gray-600 dark:text-gray-400 mb-6">
             {event.description}
           </p>
-          
+
           {/* Countdown Timer */}
           <div className="text-center mb-6">
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">This link will expire in:</p>
@@ -325,34 +323,31 @@ export default function VotePage() {
               {formatTimeRemaining()}
             </p>
           </div>
-          
+
           {/* RSVP Buttons */}
           {!showNameInput ? (
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button 
+              <button
                 onClick={() => handleResponse("in")}
                 disabled={isSubmitting}
-                className={`px-8 py-4 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${
-                  isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
+                className={`px-8 py-4 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
               >
                 I'm In! 👍
               </button>
-              <button 
+              <button
                 onClick={() => handleResponse("maybe")}
                 disabled={isSubmitting}
-                className={`px-8 py-4 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${
-                  isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
+                className={`px-8 py-4 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
               >
                 Maybe 🤔
               </button>
-              <button 
+              <button
                 onClick={() => handleResponse("out")}
                 disabled={isSubmitting}
-                className={`px-8 py-4 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${
-                  isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
+                className={`px-8 py-4 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
               >
                 Can't Make It 👎
               </button>
@@ -375,9 +370,8 @@ export default function VotePage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className={`w-full px-8 py-4 rounded-xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${
-                    isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-                  }`}
+                  className={`w-full px-8 py-4 rounded-xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
                 >
                   {isSubmitting ? 'Submitting...' : 'Submit'}
                 </button>
@@ -389,9 +383,8 @@ export default function VotePage() {
                     setIsSubmitting(false);
                   }}
                   disabled={isSubmitting}
-                  className={`w-full px-8 py-4 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium text-lg transition-all hover:shadow-lg ${
-                    isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-                  }`}
+                  className={`w-full px-8 py-4 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium text-lg transition-all hover:shadow-lg ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
                 >
                   Cancel
                 </button>
@@ -399,13 +392,13 @@ export default function VotePage() {
             </form>
           )}
         </section>
-        
+
         {/* Attendees Section */}
         <section className="max-w-3xl mx-auto">
           <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500">
             Who's In?
           </h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             {/* Going */}
             <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-lg">
@@ -422,7 +415,7 @@ export default function VotePage() {
                   ))}
               </ul>
             </div>
-            
+
             {/* Maybe */}
             <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-lg">
               <h3 className="text-xl font-bold mb-4 text-yellow-600 dark:text-yellow-400 flex items-center">
@@ -438,7 +431,7 @@ export default function VotePage() {
                   ))}
               </ul>
             </div>
-            
+
             {/* Not Going */}
             <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-lg">
               <h3 className="text-xl font-bold mb-4 text-red-600 dark:text-red-400 flex items-center">
@@ -455,10 +448,9 @@ export default function VotePage() {
               </ul>
             </div>
           </div>
-          
-          {/* Share Button */}
+
           <div className="text-center mb-12">
-            <button 
+            <button
               onClick={handleCopyLink}
               className="px-8 py-4 rounded-xl bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 font-medium text-lg transition-all hover:shadow-lg border border-indigo-200 dark:border-indigo-800"
             >
@@ -467,9 +459,21 @@ export default function VotePage() {
               </span>
             </button>
           </div>
+
+          {event && (
+            <div className="text-center mb-12 w-full flex justify-center items-center">
+              <SocialShareImage
+                eventId={eventId || event.id}
+                eventTitle={event.title}
+                eventEmoji={event.emoji}
+                eventDate={event.date}
+                eventTime={event.time}
+              />
+            </div>
+          )}
         </section>
       </div>
-      
+
       {/* Footer */}
       <footer className="py-12 text-center text-gray-600 dark:text-gray-400">
         <p>Made @ NeoSaas by Muq, Aaron, and Ayaan</p>
@@ -479,7 +483,6 @@ export default function VotePage() {
           <a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Privacy</a>
         </div>
       </footer>
-      <EventExportButton eventId={eventId} />
     </main>
   );
 }
