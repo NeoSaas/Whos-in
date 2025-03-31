@@ -44,7 +44,7 @@ export default function About() {
             <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
               NeoSaas is a tech startup focused on creating innovative solutions for modern businesses. 
               We believe in building tools that make people's lives easier and more efficient. Whos In? is a side project of a few of us at NeoSaas.
-              We're a team of 6 software engineers who are passionate about Computer science and wanted to build something fun, free and maybe even useful.
+              We're a team of 6 college students (wanna be software engineers) who are passionate about Computer science and wanted to build something fun, free and maybe even useful.
 
             </p>
           </div>
@@ -71,19 +71,16 @@ export default function About() {
                 <div className="w-24 h-24 bg-[url('/Muqtasid.jpg')] bg-cover bg-center rounded-full flex items-center justify-center mx-auto mb-4 text-4xl">
                 </div>
                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">Muqtasid</h3>
-                <p className="text-gray-600 dark:text-gray-400">Full Stack Engineer</p>
               </div>
               <div className="text-center">
                 <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl bg-[url('/aaron.jpg')] bg-cover bg-center">
                 </div>
                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">Aaron</h3>
-                <p className="text-gray-600 dark:text-gray-400">Technical Founder</p>
               </div>
               <div className="text-center">
                 <div className="w-24 h-24 bg-[url('/ayaan.jpg')] bg-cover bg-center rounded-full flex items-center justify-center mx-auto mb-4 text-4xl">
                 </div>
                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">Ayaan</h3>
-                <p className="text-gray-600 dark:text-gray-400">Full Stack Engineer</p>
               </div>
             </div>
           </div>
