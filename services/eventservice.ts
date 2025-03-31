@@ -1,18 +1,18 @@
 import { db } from "../firebaseconfig"; // Import the Firebase db instance
-import { doc, setDoc, collection, getDocs } from "firebase/firestore"; // Import Firestore methods
+import { doc, setDoc, collection, getDocs, getDoc } from "firebase/firestore"; // Import Firestore methods
 
 // Function to generate or retrieve user ID
 export const getOrCreateUserId = async (): Promise<string> => {
   // Check local storage first
   let userId = localStorage.getItem('userId');
-  
+
   if (!userId) {
     // Generate a new user ID
     userId = crypto.randomUUID();
-    
+
     // Store in local storage
     localStorage.setItem('userId', userId);
-    
+
     // Create a user document in Firestore
     const userRef = doc(db, "users", userId);
     await setDoc(userRef, {
@@ -20,7 +20,7 @@ export const getOrCreateUserId = async (): Promise<string> => {
       lastActive: new Date().toISOString()
     });
   }
-  
+
   return userId;
 };
 
@@ -41,21 +41,27 @@ export const createEvent = async (eventData: EventData): Promise<string> => {
   try {
     // Get or create user ID
     const userId = await getOrCreateUserId();
-    
+
     // Add creatorId to event data
     const eventWithCreator = {
       ...eventData,
       creatorId: userId
     };
-
     // Create a reference to the Firestore collection for events
     const eventRef = doc(db, "events", Date.now().toString()); // Using timestamp as unique event ID
+    
+    // Check if the event already exists
+    const eventExists = await getDoc(eventRef);
+    if (eventExists.exists() || eventExists.data()?.creatorId !== userId) {
+      return "Cannot create event";
+    }
+    else {
+      // Add event data to Firestore
+      await setDoc(eventRef, eventWithCreator);
 
-    // Add event data to Firestore
-    await setDoc(eventRef, eventWithCreator);
-
-    // Return the event ID (timestamp in this case)
-    return eventRef.id;
+      // Return the event ID (timestamp in this case)
+      return eventRef.id;
+    }
   } catch (error) {
     if (error instanceof Error) { // Type guard for error
       throw new Error(`Error creating event: ${error.message}`);
@@ -70,7 +76,7 @@ export const getEvents = async (): Promise<any[]> => {
   try {
     const eventsCollection = collection(db, "events");
     const eventsSnapshot = await getDocs(eventsCollection);
-    
+
     return eventsSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
