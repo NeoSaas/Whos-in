@@ -17,7 +17,7 @@ Who's In? is a side project created by the team at NeoSaas. We wanted to make ev
 
 ## Getting Started
 
-Visit [whosin.app](https://whosin.app) to create your first event!
+Visit [whos-in.com](https://www.whos-in.com) to create your first event!
 
 1. Choose your event details
 2. Share the link with friends
