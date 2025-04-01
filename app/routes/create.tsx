@@ -28,6 +28,7 @@ export default function CreateEvent() {
   const [createdEventId, setCreatedEventId] = useState<string | null>(null);
   const navigate = useNavigate();
   const [isPrivate, setIsPrivate] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fix for time display consistency between server and client
   useEffect(() => {
@@ -144,7 +145,11 @@ export default function CreateEvent() {
   // Handle form submission
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    
+
+    if (isSubmitting) return; // Prevent multiple submissions
+
+    setIsSubmitting(true); // Set submitting state to true
+
     // Get form data
     const formData = new FormData(event.currentTarget);
     
@@ -178,6 +183,7 @@ export default function CreateEvent() {
       // Show error message to user
     } finally {
       setIsCreating(false);
+      setIsSubmitting(false); // Reset submitting state
     }
   };
 
@@ -495,9 +501,10 @@ export default function CreateEvent() {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full py-4 rounded-xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1"
+                disabled={isSubmitting}
+                className={`w-full py-4 rounded-xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                Create Event
+                {isSubmitting ? 'Creating...' : 'Create Event'}
               </button>
             </Form>
           </div>
