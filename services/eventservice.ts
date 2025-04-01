@@ -41,8 +41,10 @@ interface EventData {
 // Get Firebase Functions instance
 const functions = getFunctions();
 
+const env = import.meta.env;
+
 // Make sure this matches EXACTLY with the server
-export const CLIENT_SECRET = import.meta.env.CLIENT_SECRET;
+export const CLIENT_SECRET = env.CLIENT_SECRET;
 
 // Utility function to create signature
 const createSignature = (payload: any, timestamp: number, userId: string): string => {

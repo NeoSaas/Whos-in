@@ -212,8 +212,8 @@ export default function CreateEvent() {
                       <span className="text-4xl">{selectedEmoji}</span>
                     </button>
                     {showEmojiPicker && (
-                      <div className="absolute z-10 mt-2 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 w-[600px]">
-                        <div className="grid grid-cols-8 gap-4">
+                      <div className="absolute z-20 mt-2 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 md:w-[600px] w-[200px]">
+                        <div className="grid grid-cols-2 md:grid-cols-8 gap-4">
                           {commonEmojis.map((emoji) => (
                             <button
                               key={emoji}
@@ -238,6 +238,7 @@ export default function CreateEvent() {
                     required
                     className="flex-1 px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                     placeholder="e.g., Game Night, Pizza Party"
+                    maxLength={75}
                   />
                 </div>
                 <input type="hidden" name="emoji" value={selectedEmoji} />
@@ -438,6 +439,7 @@ export default function CreateEvent() {
                   required
                   className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none"
                   placeholder="Tell your friends what to expect..."
+                  maxLength={250}
                 />
               </div>
 

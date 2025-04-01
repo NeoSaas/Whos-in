@@ -22,6 +22,8 @@ export function meta({ }: Route.MetaArgs) {
   ];
 }
 
+const env = import.meta.env;
+
 // Function to generate or retrieve user ID
 const getOrCreateUserId = async (): Promise<string> => {
   // Check local storage first
@@ -241,7 +243,7 @@ export default function VotePage() {
         const signature = createRsvpSignature(rsvpData, timestamp, userId);
 
         // Make the request to the cloud function
-        const response = await fetch('https://updateattendees-63rtehoika-uc.a.run.appL', {
+        const response = await fetch('https://updateattendees-63rtehoika-uc.a.run.app', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
