@@ -44,7 +44,7 @@ const functions = getFunctions();
 const env = import.meta.env;
 
 // Make sure this matches EXACTLY with the server
-export const CLIENT_SECRET = env.CLIENT_SECRET;
+export const CLIENT_SECRET = "B&fB=ayO+?l9jM<";
 
 // Utility function to create signature
 const createSignature = (payload: any, timestamp: number, userId: string): string => {
