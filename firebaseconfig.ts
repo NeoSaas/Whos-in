@@ -3,13 +3,15 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
+const env = import.meta.env;
+
 const firebaseConfig = {
-  apiKey: process.env.VITE_APIKEY,
-  authDomain: process.env.VITE_AUTHDOMAIN,
-  projectId: process.env.VITE_PROJECTID,
-  storageBucket: process.env.VITE_STORAGEBUCKET,
-  messagingSenderId: process.env.VITE_MESSAGINGSENDERID,
-  appId: process.env.VITE_APPID,
+  apiKey: env.VITE_APIKEY,
+  authDomain: env.VITE_AUTHDOMAIN,
+  projectId: env.VITE_PROJECTID,
+  storageBucket: env.VITE_STORAGEBUCKET,
+  messagingSenderId: env.VITE_MESSAGINGSENDERID,
+  appId: env.VITE_APPID,
 };
 
 // Initialize Firebase
