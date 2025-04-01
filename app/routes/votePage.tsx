@@ -8,7 +8,8 @@ import type { MetaFunction } from "react-router";
 import { SocialShareImage } from "../components/SocialShareImage";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import CryptoJS from 'crypto-js';
-import { CLIENT_SECRET } from "../../services/eventservice";
+
+const CLIENT_SECRET = "B&fB=ayO+?l9jM<";
 
 export namespace Route {
   export type MetaArgs = Parameters<MetaFunction>[0];
@@ -55,18 +56,6 @@ interface Attendee {
 
 // Get Firebase Functions instance
 const functions = getFunctions();
-
-// Create signature for RSVP
-const createRsvpSignature = (data: any, timestamp: number, userId: string): string => {
-  const dataToSign = JSON.stringify({
-    eventData: data,
-    timestamp,
-    userId
-  });
-  
-  // Use the same client secret as createEvent
-  return CryptoJS.HmacSHA256(dataToSign, CLIENT_SECRET).toString();
-};
 
 export default function VotePage() {
   const { eventId } = useParams();
@@ -221,7 +210,6 @@ export default function VotePage() {
     const displayName = name.trim() ? name : "Anonymous user";
 
     try {
-      // Get or create user ID
       const userId = await getOrCreateUserId();
       if (userId && creatorId && userId === creatorId) {
         alert("You cannot RSVP to your own event.");
@@ -230,20 +218,30 @@ export default function VotePage() {
       }
 
       if (eventId) {
-        // Create the event data object
-        const rsvpData: any = {
+        // Generate timestamp ONCE and use it throughout
+        const timestamp = Date.now();
+
+        const rsvpData = {
           eventId,
           displayName,
           status: formResponse
         };
 
-        // Create timestamp for signature
-        const timestamp = Date.now();
+        // Create signature using the same timestamp that will be sent
+        const dataToSign = {
+          eventData: rsvpData,
+          timestamp,
+          userId
+        };
         
-        // Generate signature
-        const signature = createRsvpSignature(rsvpData, timestamp, userId);
+        // Generate signature using the stringified data
+        const signature = CryptoJS.HmacSHA256(
+          JSON.stringify(dataToSign),
+          CLIENT_SECRET
+        ).toString();
+        
 
-        // Make the request to the cloud function
+        // Use the same data structure for the request
         const response = await fetch('https://updateattendees-63rtehoika-uc.a.run.app', {
           method: 'POST',
           headers: {
@@ -252,20 +250,19 @@ export default function VotePage() {
           body: JSON.stringify({
             eventData: rsvpData,
             signature,
-            timestamp,
+            timestamp, // Use the same timestamp
             userId
           })
         });
 
+        const responseData = await response.json();
+
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to update RSVP');
+          throw new Error(responseData.error || 'Failed to update RSVP');
         }
 
-        // Update local state
+        // Success handling
         setShowNameInput(false);
-        
-        // Refresh attendees list
         const eventRef = doc(db, "events", eventId);
         const eventSnapshot = await getDoc(eventRef);
         if (eventSnapshot.exists()) {
