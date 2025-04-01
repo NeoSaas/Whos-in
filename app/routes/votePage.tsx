@@ -81,6 +81,7 @@ export default function VotePage() {
   const [isExpired, setIsExpired] = useState(false);
   const [attendees, setAttendees] = useState<any[]>([]);
   const [creatorId, setCreatorId] = useState<string | null>(null);
+  const [linkCopied, setLinkCopied] = useState(false);
   
   // Fetch event data if we have an eventId
   useEffect(() => {
@@ -295,7 +296,10 @@ export default function VotePage() {
     const link = generateInviteLink();
     navigator.clipboard.writeText(link)
       .then(() => {
-        alert("Invite link copied to clipboard!");
+        setLinkCopied(true);
+        setTimeout(() => {
+          setLinkCopied(false);
+        }, 2000);
       })
       .catch(err => {
         console.error("Failed to copy link:", err);
@@ -555,7 +559,24 @@ export default function VotePage() {
           <a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Privacy</a>
         </div>
       </footer>
+
+      {linkCopied && (
+        <div style={{
+          position: 'fixed',
+          bottom: '20px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          color: 'white',
+          padding: '10px 20px',
+          borderRadius: '5px',
+          zIndex: 1000,
+          transition: 'opacity 0.5s',
+          opacity: 1,
+        }}>
+          Link copied!
+        </div>
+      )}
     </main>
   );
 }
-
