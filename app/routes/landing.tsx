@@ -10,8 +10,6 @@ export function meta({ }: Route.MetaArgs) {
     ];
 }
 
-console.log(process.env.VITE_APIKEY);
-
 export default function Landing() {
     const [publicEvents, setPublicEvents] = useState<any[]>([]);
 
@@ -41,7 +39,7 @@ export default function Landing() {
                         </h1>
                     </div>
                     <p className="text-xl md:text-2xl mb-8 max-w-3xl text-gray-700 dark:text-gray-300">
-                        No login. No hassle. Just quick, fun event planning with friends!
+                        Get your friends together on the spot or in advance. No login. No hassle.
                     </p>
 
                     {/* Simplified Action */}

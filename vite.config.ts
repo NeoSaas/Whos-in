@@ -12,6 +12,7 @@ export default defineConfig({
     STORAGEBUCKET: process.env.VITE_STORAGEBUCKET,
     MESSAGINGSENDERID: process.env.VITE_MESSAGINGSENDERID,
     APPID: process.env.VITE_APPID,
+    CLIENT_SECRET: process.env.SECRET_KEY,
   },
 });
 

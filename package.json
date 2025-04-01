@@ -12,6 +12,7 @@
     "@react-router/node": "^7.4.1",
     "@react-router/serve": "^7.4.1",
     "@vercel/analytics": "^1.5.0",
+    "crypto-js": "^4.2.0",
     "firebase": "^11.5.0",
     "html2canvas": "^1.4.1",
     "html2canvas-pro": "^1.5.8",
@@ -27,6 +28,7 @@
   "devDependencies": {
     "@react-router/dev": "^7.4.1",
     "@tailwindcss/vite": "^4.0.0",
+    "@types/crypto-js": "^4.2.2",
     "@types/node": "^20.17.28",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.1",

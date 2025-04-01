@@ -53,16 +53,13 @@ export default function MyEvents() {
     try {
       setLoading(true);
       
-      // Create a query for events created by this user
       const eventsQuery = query(
         collection(db, "events"),
         where("creatorId", "==", uid)
       );
       
-      // Execute the query
       const querySnapshot = await getDocs(eventsQuery);
       
-      // Process the results
       const userEvents: UserEvent[] = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data();
@@ -79,6 +76,11 @@ export default function MyEvents() {
           dateStr = data.date || "Date TBD";
         }
         
+        // Handle the createdAt timestamp
+        const createdAt = data.createdAt?.seconds ? 
+          new Date(data.createdAt.seconds * 1000 + Math.floor(data.createdAt.nanoseconds / 1000000)) :
+          new Date(data.createdAt);
+        
         userEvents.push({
           id: doc.id,
           title: data.name,
@@ -88,7 +90,7 @@ export default function MyEvents() {
           location: data.place,
           description: data.description,
           attendees: data.attendees || [],
-          createdAt: data.createdAt,
+          createdAt: createdAt.toISOString(), // Store as ISO string for consistency
           private: data.private
         });
       });
@@ -107,7 +109,7 @@ export default function MyEvents() {
     }
   };
   
-  // Calculate if an event link is still valid (created within the last hour)
+  // Update the isEventLinkValid function to handle Firestore timestamps
   const isEventLinkValid = (createdAt: string) => {
     try {
       const createdTime = new Date(createdAt).getTime();

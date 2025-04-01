@@ -15,9 +15,9 @@ export function Header() {
   return (
     <nav className="flex flex-row justify-between items-center absolute top-0 left-0 right-0 z-10">
       <div className="container mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-row justify-between items-center relative">
-        <Link to="/" className="font-bold text-2xl flex flex-row items-center font-display justify-center z-20">
+        <a href="/" className="font-bold text-2xl flex flex-row items-center font-display justify-center z-20">
           <img src="/logo_white_no_background.png" alt="Who's In Logo" className="w-32 h-32 mr-2" />
-        </Link>
+        </a>
         
         {/* Mobile Menu Button */}
         <button 

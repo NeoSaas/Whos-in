@@ -1,5 +1,7 @@
 import { db } from "../firebaseconfig"; // Import the Firebase db instance
 import { doc, setDoc, collection, getDocs, getDoc } from "firebase/firestore"; // Import Firestore methods
+import { getFunctions, httpsCallable } from "firebase/functions";
+import * as CryptoJS from 'crypto-js'; // Add this package to your dependencies
 
 // Function to generate or retrieve user ID
 export const getOrCreateUserId = async (): Promise<string> => {
@@ -36,38 +38,71 @@ interface EventData {
   creatorId?: string; // Add creatorId to EventData
 }
 
-// Function to create an event in Firebase Firestore
+// Get Firebase Functions instance
+const functions = getFunctions();
+
+// Make sure this matches EXACTLY with the server
+export const CLIENT_SECRET = import.meta.env.CLIENT_SECRET;
+
+// Utility function to create signature
+const createSignature = (payload: any, timestamp: number, userId: string): string => {
+  // Create the exact same payload structure as the server expects
+  const dataToSign = JSON.stringify({
+    eventData: payload,
+    timestamp,
+    userId
+  });
+  
+  // Create HMAC signature
+  const signature = CryptoJS.HmacSHA256(dataToSign, CLIENT_SECRET).toString();
+  
+  return signature;
+};
+
+// Updated function to create event with signature
 export const createEvent = async (eventData: EventData): Promise<string> => {
   try {
-    // Get or create user ID
     const userId = await getOrCreateUserId();
-
-    // Add creatorId to event data
-    const eventWithCreator = {
-      ...eventData,
-      creatorId: userId
-    };
-    // Create a reference to the Firestore collection for events
-    const eventRef = doc(db, "events", Date.now().toString()); // Using timestamp as unique event ID
+    const timestamp = Date.now();
     
-    // Check if the event already exists
-    const eventExists = await getDoc(eventRef);
-    if (eventExists.exists() || eventExists.data()?.creatorId !== userId) {
-      return "Cannot create event";
-    }
-    else {
-      // Add event data to Firestore
-      await setDoc(eventRef, eventWithCreator);
+    console.log('Creating event with:', {
+      eventData,
+      timestamp,
+      userId
+    });
+    
+    const signature = createSignature(eventData, timestamp, userId);
+    
+    const response = await fetch('https://createevent-63rtehoika-uc.a.run.app', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        eventData,
+        signature,
+        timestamp,
+        userId
+      })
+    });
 
-      // Return the event ID (timestamp in this case)
-      return eventRef.id;
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.log('Server error response:', errorData);
+      throw new Error(errorData.error || 'Failed to create event');
+    }
+
+    const data = await response.json();
+    console.log('Server success response:', data);
+    
+    if (data.success && data.eventId) {
+      return data.eventId;
+    } else {
+      throw new Error('Failed to create event');
     }
   } catch (error) {
-    if (error instanceof Error) { // Type guard for error
-      throw new Error(`Error creating event: ${error.message}`);
-    } else {
-      throw new Error('An unknown error occurred while creating the event');
-    }
+    console.error('Create event error:', error);
+    throw error;
   }
 };
 

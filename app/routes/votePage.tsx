@@ -6,6 +6,9 @@ import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseconfig";
 import type { MetaFunction } from "react-router";
 import { SocialShareImage } from "../components/SocialShareImage";
+import { getFunctions, httpsCallable } from "firebase/functions";
+import CryptoJS from 'crypto-js';
+import { CLIENT_SECRET } from "../../services/eventservice";
 
 export namespace Route {
   export type MetaArgs = Parameters<MetaFunction>[0];
@@ -48,10 +51,25 @@ interface Attendee {
   status: string;
 }
 
+// Get Firebase Functions instance
+const functions = getFunctions();
+
+// Create signature for RSVP
+const createRsvpSignature = (data: any, timestamp: number, userId: string): string => {
+  const dataToSign = JSON.stringify({
+    eventData: data,
+    timestamp,
+    userId
+  });
+  
+  // Use the same client secret as createEvent
+  return CryptoJS.HmacSHA256(dataToSign, CLIENT_SECRET).toString();
+};
+
 export default function VotePage() {
   const { eventId } = useParams();
   const [name, setName] = useState("");
-  const [response, setResponse] = useState<string | null>(null);
+  const [formResponse, setFormResponse] = useState<string | null>(null);
   const [showNameInput, setShowNameInput] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(60 * 60); // Default to 1 hour in seconds
   const [event, setEvent] = useState<any>(null);
@@ -61,7 +79,7 @@ export default function VotePage() {
   const [isExpired, setIsExpired] = useState(false);
   const [attendees, setAttendees] = useState<any[]>([]);
   const [creatorId, setCreatorId] = useState<string | null>(null);
-
+  
   // Fetch event data if we have an eventId
   useEffect(() => {
     async function fetchEvent() {
@@ -98,20 +116,27 @@ export default function VotePage() {
           // Transform Firestore data to match our expected format
           const eventData = eventSnapshot.data();
           
-          // Calculate time remaining based on creation timestamp
-          if (eventData.createdAt) {
-            const createdAtTime = new Date(eventData.createdAt).getTime();
-            const currentTime = Date.now();
-            const elapsedTimeInSeconds = Math.floor((currentTime - createdAtTime) / 1000);
-            const oneHourInSeconds = 60 * 60;
-            const remainingSeconds = Math.max(0, oneHourInSeconds - elapsedTimeInSeconds);
-            
-            setTimeRemaining(remainingSeconds);
-            
-            // Set expired flag if more than an hour has passed
-            if (remainingSeconds <= 0) {
-              setIsExpired(true);
-            }
+          // Handle Firestore Timestamp object
+          const createdAtTime = eventData.createdAt ? 
+            // If it's a Firestore timestamp
+            (eventData.createdAt.seconds ? 
+              // If it's a Firestore timestamp
+              (eventData.createdAt.seconds * 1000 + Math.floor(eventData.createdAt.nanoseconds / 1000000)) :
+              // If it's an ISO string (from your current code)
+              new Date(eventData.createdAt).getTime()) :
+            // If it's an ISO string (from your current code)
+            new Date(eventData.createdAt).getTime();
+          
+          const currentTime = Date.now();
+          const elapsedTimeInSeconds = Math.floor((currentTime - createdAtTime) / 1000);
+          const oneHourInSeconds = 60 * 60;
+          const remainingSeconds = Math.max(0, oneHourInSeconds - elapsedTimeInSeconds);
+          
+          setTimeRemaining(remainingSeconds);
+          
+          // Set expired flag if more than an hour has passed
+          if (remainingSeconds <= 0) {
+            setIsExpired(true);
           }
 
           // Format the date and time
@@ -181,75 +206,75 @@ export default function VotePage() {
 
   const handleResponse = (status: string) => {
     if (isSubmitting || isExpired) return; // Prevent submissions if expired
-    setResponse(status);
+    setFormResponse(status);
     setShowNameInput(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-
     e.preventDefault();
-    if (isSubmitting) return; // Prevent multiple submissions
+    if (isSubmitting) return;
 
     setIsSubmitting(true);
     const displayName = name.trim() ? name : "Anonymous user";
 
-    // Get or create user ID
-    const userId = await getOrCreateUserId();
-    if (userId && creatorId && userId === creatorId) {
-      alert("You cannot RSVP to your own event.");
-      setIsSubmitting(false);
-      return;
-    }
+    try {
+      // Get or create user ID
+      const userId = await getOrCreateUserId();
+      if (userId && creatorId && userId === creatorId) {
+        alert("You cannot RSVP to your own event.");
+        setIsSubmitting(false);
+        return;
+      }
 
-    if (eventId) {
-      try {
-        // Get a reference to the event document
+      if (eventId) {
+        // Create the event data object
+        const rsvpData: any = {
+          eventId,
+          displayName,
+          status: formResponse
+        };
+
+        // Create timestamp for signature
+        const timestamp = Date.now();
+        
+        // Generate signature
+        const signature = createRsvpSignature(rsvpData, timestamp, userId);
+
+        // Make the request to the cloud function
+        const response = await fetch('https://updateattendees-63rtehoika-uc.a.run.appL', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            eventData: rsvpData,
+            signature,
+            timestamp,
+            userId
+          })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to update RSVP');
+        }
+
+        // Update local state
+        setShowNameInput(false);
+        
+        // Refresh attendees list
         const eventRef = doc(db, "events", eventId);
-
-        // Get current event data
         const eventSnapshot = await getDoc(eventRef);
         if (eventSnapshot.exists()) {
-          const eventData = eventSnapshot.data();
-
-          // Check if user has already responded
-          const existingResponse = eventData.attendees?.find(
-            (a: any) => a.userId === userId
-          );
-
-          if (existingResponse) {
-            // Update existing response
-            const updatedAttendees = eventData.attendees.map((a: any) =>
-              a.userId === userId ? { ...a, name: displayName, status: response } : a
-            );
-
-            await updateDoc(eventRef, {
-              attendees: updatedAttendees
-            });
-          } else {
-            // Add new response
-            const updatedAttendees = [
-              ...(eventData.attendees || []),
-              {
-                userId: userId,
-                name: displayName,
-                status: response
-              }
-            ];
-
-            await updateDoc(eventRef, {
-              attendees: updatedAttendees
-            });
-
-            setAttendees(updatedAttendees);
-          }
+          setAttendees(eventSnapshot.data().attendees || []);
         }
-      } catch (err) {
-        console.error("Error updating event:", err);
       }
+    } catch (err) {
+      console.error("Error updating RSVP:", err);
+      alert("Failed to update RSVP. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setShowNameInput(false);
-    setIsSubmitting(false);
   };
 
   // Generate the invite link based on window location and event ID
@@ -424,7 +449,7 @@ export default function VotePage() {
                   type="button"
                   onClick={() => {
                     setShowNameInput(false);
-                    setResponse(null);
+                    setFormResponse(null);
                     setIsSubmitting(false);
                   }}
                   disabled={isSubmitting}

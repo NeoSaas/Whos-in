@@ -86,12 +86,12 @@ export default function About() {
           </div>
 
           <div className="text-center mt-8">
-            <Link 
-              to="/" 
+            <a 
+              href="/" 
               className="inline-block px-8 py-4 rounded-xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1"
             >
               Back to Home
-            </Link>
+            </a>
           </div>
         </div>
       </div>

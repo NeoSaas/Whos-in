@@ -19,15 +19,33 @@ export default function PublicEvents() {
     const fetchEvents = async () => {
       try {
         const allEvents = await getEvents();
-        // Filter for public events only
-        const publicEvents = allEvents.filter((event: any) => !event.private);
+        // Filter for public events only and sort by createdAt
+        const publicEvents = allEvents
+          .filter((event: any) => !event.private)
+          .sort((a: any, b: any) => {
+            // Handle Firestore timestamp objects
+            const getTimestamp = (event: any) => {
+              const createdAt = event.createdAt;
+              if (!createdAt) return 0;
+
+              // If it's a Firestore timestamp
+              if (createdAt.seconds) {
+                return createdAt.seconds * 1000 + Math.floor(createdAt.nanoseconds / 1000000);
+              }
+              // If it's an ISO string
+              return new Date(createdAt).getTime();
+            };
+
+            return getTimestamp(b) - getTimestamp(a); // Sort descending (newest first)
+          });
+
         setTotalEvents(publicEvents.length);
-        
+
         // Calculate pagination
         const startIndex = (currentPage - 1) * eventsPerPage;
         const endIndex = startIndex + eventsPerPage;
         const paginatedEvents = publicEvents.slice(startIndex, endIndex);
-        
+
         setEvents(paginatedEvents);
       } catch (error) {
         console.error("Error fetching events:", error);
@@ -80,7 +98,7 @@ export default function PublicEvents() {
                           <p className="text-gray-600 dark:text-gray-400 mb-4 flex-grow">{event.description}</p>
                         )}
                         <div className="mt-auto">
-                          <Link 
+                          <Link
                             to={`/event/${event.id}`}
                             className="w-full inline-block text-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
                           >
@@ -93,8 +111,13 @@ export default function PublicEvents() {
                 </div>
 
                 <div className="mt-8 flex items-center justify-between">
-                  <div className="text-gray-600 dark:text-gray-400">
-                    Showing {events.length} events out of {totalEvents} total
+                  <div className="flex items-left space-x-4 flex-col">
+                    <div className="text-gray-600 dark:text-gray-400 mb-2">
+                      Page {currentPage} of {totalPages}
+                    </div>
+                    <div className="text-gray-600 dark:text-gray-400">
+                      Total events: {totalEvents}
+                    </div>
                   </div>
                   <div className="flex items-center space-x-4">
                     <button
