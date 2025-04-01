@@ -10,6 +10,8 @@ export function meta({ }: Route.MetaArgs) {
     ];
 }
 
+console.log(process.env.VITE_APIKEY);
+
 export default function Landing() {
     const [publicEvents, setPublicEvents] = useState<any[]>([]);
 
