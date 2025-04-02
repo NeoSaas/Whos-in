@@ -6,9 +6,34 @@ import { getOrCreateUserId } from "../../services/eventservice";
 import type { Route } from "./+types/events";
 
 export function meta({}: Route.MetaArgs) {
+  const siteUrl = "https://whosin.app";
+  const title = "My Events | Who's In?";
+  const description = "View and manage all your created events. Track RSVPs, event details, and share your events with friends.";
+  const ogImage = `${siteUrl}/og-myevents.png`;
+  
   return [
-    { title: "My Events - Who's In" },
-    { name: "description", content: "View and manage your events" },
+    { title },
+    { name: "description", content: description },
+    
+    // OpenGraph tags
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: `${siteUrl}/events` },
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:image", content: ogImage },
+    { property: "og:image:width", content: "1200" },
+    { property: "og:image:height", content: "630" },
+    { property: "og:site_name", content: "Who's In?" },
+    
+    // Twitter Card tags
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: ogImage },
+    
+    // Additional SEO tags
+    { name: "keywords", content: "manage events, my events, event dashboard, event tracker" },
+    { name: "robots", content: "noindex, follow" }, // Don't index personal pages
   ];
 }
 

@@ -3,9 +3,35 @@ import { FaGithub, FaLinkedin, FaTwitter, FaInstagram } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 
 export function meta() {
+  const siteUrl = "https://whosin.app";
+  const title = "About the Team | Who's In?";
+  const description = "Meet the team behind Who's In? - a dedicated group of college students creating simple tools for everyday problems.";
+  const ogImage = `${siteUrl}/og-about.png`;
+  
   return [
-    { title: "About Us - Who's In?" },
-    { name: "description", content: "Learn about the team behind Who's In?" },
+    { title },
+    { name: "description", content: description },
+    
+    // OpenGraph tags
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: `${siteUrl}/about` },
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:image", content: ogImage },
+    { property: "og:image:width", content: "1200" },
+    { property: "og:image:height", content: "630" },
+    { property: "og:site_name", content: "Who's In?" },
+    
+    // Twitter Card tags
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: ogImage },
+    
+    // Additional SEO tags
+    { name: "keywords", content: "NeoSaas, event planning app, student developers, startup, who's in team" },
+    { name: "author", content: "NeoSaas" },
+    { name: "robots", content: "index, follow" },
   ];
 }
 

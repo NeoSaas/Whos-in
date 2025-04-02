@@ -4,9 +4,34 @@ import { useState, useRef, useEffect } from "react";
 import { createEvent } from "../../services/eventservice";
 
 export function meta({}: Route.MetaArgs) {
+  const siteUrl = "https://whosin.app";
+  const title = "Create an Event | Who's In?";
+  const description = "Create your free event in seconds. No login required, just share the link with friends to collect RSVPs instantly.";
+  const ogImage = `${siteUrl}/og-create.png`;
+  
   return [
-    { title: "Create Event - Who's In" },
-    { name: "description", content: "Create a new event in seconds" },
+    { title },
+    { name: "description", content: description },
+    
+    // OpenGraph tags
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: `${siteUrl}/create` },
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:image", content: ogImage },
+    { property: "og:image:width", content: "1200" },
+    { property: "og:image:height", content: "630" },
+    { property: "og:site_name", content: "Who's In?" },
+    
+    // Twitter Card tags
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: ogImage },
+    
+    // Additional SEO tags
+    { name: "keywords", content: "create event, event planning, schedule gathering, free event planner" },
+    { name: "robots", content: "index, follow" },
   ];
 }
 

@@ -3,9 +3,34 @@ import { useState, useEffect } from "react";
 import { getEvents } from "../../services/eventservice";
 
 export function meta() {
+  const siteUrl = "https://whosin.app";
+  const title = "Public Events | Who's In?";
+  const description = "Discover and join public events created by the Who's In? community. Find events near you that interest you.";
+  const ogImage = `${siteUrl}/og-public.png`;
+  
   return [
-    { title: "Public Events - Who's In?" },
-    { name: "description", content: "Browse and join public events" },
+    { title },
+    { name: "description", content: description },
+    
+    // OpenGraph tags
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: `${siteUrl}/public` },
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:image", content: ogImage },
+    { property: "og:image:width", content: "1200" },
+    { property: "og:image:height", content: "630" },
+    { property: "og:site_name", content: "Who's In?" },
+    
+    // Twitter Card tags
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: ogImage },
+    
+    // Additional SEO tags
+    { name: "keywords", content: "public events, community events, find events, join events, event listing" },
+    { name: "robots", content: "index, follow" },
   ];
 }
 

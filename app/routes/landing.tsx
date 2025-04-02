@@ -4,9 +4,35 @@ import { useState, useEffect } from "react";
 import { getEvents } from "../../services/eventservice";
 
 export function meta({ }: Route.MetaArgs) {
+    const siteUrl = "https://whosin.app";
+    const title = "Who's In? - Simple Event Planning Made Fun";
+    const description = "Create events in seconds, share with anyone, and track RSVPs instantly. No login required, completely free.";
+    const ogImage = `${siteUrl}/og-home.png`;
+    
     return [
-        { title: "Who's In - Fun Event Planning" },
-        { name: "description", content: "The simplest way to plan events with friends" },
+        { title },
+        { name: "description", content: description },
+        
+        // OpenGraph tags
+        { property: "og:type", content: "website" },
+        { property: "og:url", content: siteUrl },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:image", content: ogImage },
+        { property: "og:image:width", content: "1200" },
+        { property: "og:image:height", content: "630" },
+        { property: "og:site_name", content: "Who's In?" },
+        
+        // Twitter Card tags
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+        { name: "twitter:image", content: ogImage },
+        
+        // Additional SEO tags
+        { name: "keywords", content: "event planning, RSVP, schedule events, free event tool, no login event planning" },
+        { name: "author", content: "NeoSaas" },
+        { name: "robots", content: "index, follow" },
     ];
 }
 

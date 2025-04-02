@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { useState, useEffect } from "react";
-import type { Route } from "./+types/votePage";
+import type { Route as ImportedRoute } from "./+types/votePage";
 import { useParams } from "react-router";
 import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseconfig";
@@ -13,13 +13,46 @@ const CLIENT_SECRET = "B&fB=ayO+?l9jM<";
 
 export namespace Route {
   export type MetaArgs = Parameters<MetaFunction>[0];
-  export type LoaderData = {};
+  export type LoaderData = {
+    event?: {
+      title: string;
+      date: string;
+      time?: string;
+    };
+  };
 }
 
-export function meta({ }: Route.MetaArgs) {
+export function meta({ params, data }: Route.MetaArgs & { data: Route.LoaderData }) {
+  const { eventId } = params;
+  if (!data || !data.event) {
+    return [
+      { title: "Event RSVP - Who's In?" },
+      { name: "description", content: "Let everyone know if you're in for this event!" },
+    ];
+  }
+  
+  const { event } = data;
+  const eventUrl = `https://whosin.app/event/${eventId}`;
+  const ogImageUrl = `https://whosin.app/og-image/${eventId}.png`;
+  
   return [
-    { title: "Event RSVP - Who's In?" },
-    { name: "description", content: "Let everyone know if you're in for this event!" },
+    { title: `${event.title} | Who's In?` },
+    { name: "description", content: `RSVP to ${event.title} on ${event.date}${event.time ? ` at ${event.time}` : ''}. Join us!` },
+    
+    // OpenGraph tags
+    { property: "og:url", content: eventUrl },
+    { property: "og:type", content: "website" },
+    { property: "og:title", content: `${event.title} | Who's In?` },
+    { property: "og:description", content: `RSVP to ${event.title} on ${event.date}${event.time ? ` at ${event.time}` : ''}. Join us!` },
+    { property: "og:image", content: ogImageUrl },
+    { property: "og:image:width", content: "1200" },
+    { property: "og:image:height", content: "630" },
+    
+    // Twitter Card tags
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: `${event.title} | Who's In?` },
+    { name: "twitter:description", content: `RSVP to ${event.title} on ${event.date}${event.time ? ` at ${event.time}` : ''}. Join us!` },
+    { name: "twitter:image", content: ogImageUrl },
   ];
 }
 
