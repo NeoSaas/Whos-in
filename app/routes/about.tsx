@@ -6,7 +6,7 @@ export function meta() {
   const siteUrl = "https://www.whos-in.com";
   const title = "About the Team | Who's In?";
   const description = "Meet the team behind Who's In? - a dedicated group of college students creating simple tools for everyday problems.";
-  const ogImage = `${siteUrl}/og-about.png`;
+  const ogImage = `${siteUrl}/api/og?title=${encodeURIComponent(title)}`;
   
   return [
     { title },

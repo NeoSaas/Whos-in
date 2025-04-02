@@ -6,7 +6,7 @@ export function meta() {
   const siteUrl = "https://www.whos-in.com";
   const title = "Public Events | Who's In?";
   const description = "Discover and join public events created by the Who's In? community. Find events near you that interest you.";
-  const ogImage = `${siteUrl}/og-public.png`;
+  const ogImage = `${siteUrl}/api/og?title=${encodeURIComponent(title)}`;
   
   return [
     { title },
