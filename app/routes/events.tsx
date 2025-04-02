@@ -6,7 +6,7 @@ import { getOrCreateUserId } from "../../services/eventservice";
 import type { Route } from "./+types/events";
 
 export function meta({}: Route.MetaArgs) {
-  const siteUrl = "https://whosin.app";
+  const siteUrl = "https://www.whos-in.com";
   const title = "My Events | Who's In?";
   const description = "View and manage all your created events. Track RSVPs, event details, and share your events with friends.";
   const ogImage = `${siteUrl}/og-myevents.png`;

@@ -3,7 +3,7 @@ import { FaGithub, FaLinkedin, FaTwitter, FaInstagram } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 
 export function meta() {
-  const siteUrl = "https://whosin.app";
+  const siteUrl = "https://www.whos-in.com";
   const title = "About the Team | Who's In?";
   const description = "Meet the team behind Who's In? - a dedicated group of college students creating simple tools for everyday problems.";
   const ogImage = `${siteUrl}/og-about.png`;

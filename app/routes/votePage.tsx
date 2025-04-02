@@ -32,8 +32,8 @@ export function meta({ params, data }: Route.MetaArgs & { data: Route.LoaderData
   }
   
   const { event } = data;
-  const eventUrl = `https://whosin.app/event/${eventId}`;
-  const ogImageUrl = `https://whosin.app/og-image/${eventId}.png`;
+  const eventUrl = `https://www.whos-in.com/event/${eventId}`;
+  const ogImageUrl = `https://www.whos-in.com/og-image/${eventId}.png`;
   
   return [
     { title: `${event.title} | Who's In?` },

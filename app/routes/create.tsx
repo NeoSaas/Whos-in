@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { createEvent } from "../../services/eventservice";
 
 export function meta({}: Route.MetaArgs) {
-  const siteUrl = "https://whosin.app";
+  const siteUrl = "https://www.whos-in.com";
   const title = "Create an Event | Who's In?";
   const description = "Create your free event in seconds. No login required, just share the link with friends to collect RSVPs instantly.";
   const ogImage = `${siteUrl}/og-create.png`;

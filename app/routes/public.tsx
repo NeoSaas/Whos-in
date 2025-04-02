@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { getEvents } from "../../services/eventservice";
 
 export function meta() {
-  const siteUrl = "https://whosin.app";
+  const siteUrl = "https://www.whos-in.com";
   const title = "Public Events | Who's In?";
   const description = "Discover and join public events created by the Who's In? community. Find events near you that interest you.";
   const ogImage = `${siteUrl}/og-public.png`;
