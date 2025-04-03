@@ -45,6 +45,7 @@ interface UserEvent {
   date: string;
   time: string;
   location: string;
+  locationType: 'real-life' | 'online';
   description: string;
   attendees: any[];
   createdAt: string;
@@ -113,6 +114,7 @@ export default function MyEvents() {
           date: dateStr,
           time: data.time,
           location: data.place,
+          locationType: data.locationType || 'real-life',
           description: data.description,
           attendees: data.attendees || [],
           createdAt: createdAt.toISOString(), // Store as ISO string for consistency
@@ -253,6 +255,13 @@ export default function MyEvents() {
                     </div>
                     <div className="flex items-center">
                       <span className="mr-2">📍</span> {event.location}
+                      <span className={`ml-2 text-xs px-2 py-1 rounded-full ${
+                        event.locationType === 'online'
+                          ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
+                          : 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400'
+                      }`}>
+                        {event.locationType === 'online' ? 'Online' : 'Real Life'}
+                      </span>
                     </div>
                   </div>
                   

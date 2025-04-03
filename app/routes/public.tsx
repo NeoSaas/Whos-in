@@ -115,6 +115,13 @@ export default function PublicEvents() {
                                 <span>📅 {event.date}</span>
                                 <span>🕒 {event.time}</span>
                                 <span>📍 {event.place}</span>
+                                <span className={`text-xs px-2 py-1 rounded-full ${
+                                    event.locationType === 'online'
+                                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
+                                        : 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400'
+                                }`}>
+                                    {event.locationType === 'online' ? 'Online' : 'Real Life'}
+                                </span>
                               </div>
                             </div>
                           </div>

@@ -117,6 +117,7 @@ export default function VotePage() {
           date: "Friday, March 31",
           time: "8:00 PM",
           location: "Online - Discord",
+          locationType: "online",
           description: "Join us for a night of gaming and fun! We'll be playing various party games and chatting.",
           host: "Alex",
           attendees: [
@@ -179,6 +180,7 @@ export default function VotePage() {
             date: dateStr,
             time: eventData.time, // Use the time string directly
             location: eventData.place,
+            locationType: eventData.locationType,
             description: eventData.description,
             attendees: eventData.attendees || [],
             createdAt: eventData.createdAt
@@ -415,8 +417,16 @@ export default function VotePage() {
             <div className="flex items-center">
               <span className="mr-2">⏰</span> {event.time}
             </div>
-            <div className="flex items-center">
-              <span className="mr-2">📍</span> {event.location}
+            <div className="flex items-center space-x-2">
+              <span className="text-2xl">📍</span>
+              <span className="text-gray-700 dark:text-gray-300">{event.location}</span>
+              <span className={`text-xs px-2 py-1 rounded-full ${
+                event.locationType === 'online'
+                  ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
+                  : 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400'
+              }`}>
+                {event.locationType === 'online' ? 'Online' : 'Real Life'}
+              </span>
             </div>
           </div>
 

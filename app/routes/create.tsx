@@ -54,6 +54,7 @@ export default function CreateEvent() {
   const navigate = useNavigate();
   const [isPrivate, setIsPrivate] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [locationType, setLocationType] = useState<'real-life' | 'online' | null>(null);
 
   // Fix for time display consistency between server and client
   useEffect(() => {
@@ -188,6 +189,7 @@ export default function CreateEvent() {
       date: selectedDate?.toISOString().split('T')[0] || '', // Get date in YYYY-MM-DD format
       time: timeString, // Time in 12-hour format
       place: formData.get("location") as string,
+      locationType: formData.get("locationType") as 'real-life' | 'online',
       emoji: formData.get("emoji") as string || "🎉",
       description: formData.get("description") as string,
       private: formData.get("private") === "on",
@@ -477,16 +479,47 @@ export default function CreateEvent() {
               {/* Location */}
               <div>
                 <label htmlFor="location" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Location
+                  Location Type
                 </label>
-                <input
-                  type="text"
-                  id="location"
-                  name="location"
-                  required
-                  className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                  placeholder="e.g., Zoom, Local Park, Friend's House"
-                />
+                <div className="relative">
+                  {!locationType ? (
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setLocationType('real-life')}
+                        className="flex-1 px-4 py-3 rounded-xl border transition-all bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      >
+                        Real Life
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setLocationType('online')}
+                        className="flex-1 px-4 py-3 rounded-xl border transition-all bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      >
+                        Online
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        id="location"
+                        name="location"
+                        required
+                        className="flex-1 px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                        placeholder={locationType === 'online' ? "e.g., Zoom, Google Meet, Discord" : "e.g., Local Park, Friend's House"}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setLocationType(null)}
+                        className="px-4 py-3 rounded-xl border transition-all bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 whitespace-nowrap"
+                      >
+                        Change
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <input type="hidden" name="locationType" value={locationType || ''} />
               </div>
 
               {/* Privacy Toggle */}

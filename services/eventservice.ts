@@ -36,6 +36,7 @@ interface EventData {
   description: string;
   private: boolean;
   creatorId?: string; // Add creatorId to EventData
+  locationType: string;
 }
 
 // Get Firebase Functions instance
