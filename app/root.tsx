@@ -12,18 +12,6 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import { Header } from "./components/Header";
 
-export const links: Route.LinksFunction = () => [
-  { rel: "preconnect", href: "https://fonts.googleapis.com" },
-  {
-    rel: "preconnect",
-    href: "https://fonts.gstatic.com",
-    crossOrigin: "anonymous",
-  },
-  {
-    rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&family=Outfit:wght@100..900&display=swap",
-  },
-];
 
 // Ensure consistent rendering between server and client
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -34,6 +22,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        <script
+          src={`https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_APIKEY}&libraries=places`}
+          async
+          defer
+        />
       </head>
       <body>
         <Header />

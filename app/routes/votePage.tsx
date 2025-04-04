@@ -8,6 +8,7 @@ import type { MetaFunction } from "react-router";
 import { SocialShareImage } from "../components/SocialShareImage";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import CryptoJS from 'crypto-js';
+import { LocationMap } from "../components/LocationMap";
 
 const CLIENT_SECRET = "B&fB=ayO+?l9jM<";
 
@@ -390,204 +391,204 @@ export default function VotePage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-pink-100 via-purple-100 to-indigo-100 dark:from-pink-950 dark:via-purple-950 dark:to-indigo-950">
-      <nav className="flex flex-row justify-between items-center">
-        <div className="container mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-row justify-between items-center">
-          <Link to="/" className="font-bold text-2xl flex flex-row items-center font-display justify-center">
-            <img src="/logo_white_no_background.png" alt="Who's In Logo" className="w-32 h-32 mr-2" />
-          </Link>
-        </div>
-      </nav>
-
-      <div className="container mx-auto px-4 py-4 sm:px-6 lg:px-8">
-        {/* Event Details Card */}
-        <section className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl mb-8">
-          <div className="flex items-center justify-center h-24 w-24 mx-auto rounded-2xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white text-5xl font-bold mb-6">
-            {event.emoji}
-          </div>
-
-          <h1 className="font-display text-3xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-4">
-            {event.title}
-          </h1>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-gray-600 dark:text-gray-400 mb-6">
-            <div className="flex items-center">
-              <span className="mr-2">📅</span> {event.date}
+    <main className="min-h-screen bg-gradient-to-b from-pink-100 via-purple-100 to-indigo-100 dark:from-pink-950 dark:via-purple-950 dark:to-indigo-950 pt-24">
+      <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto">
+          {/* Event Details Card */}
+          <section className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl mb-8">
+            <div className="flex items-center justify-center h-24 w-24 mx-auto rounded-2xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white text-5xl font-bold mb-6">
+              {event.emoji}
             </div>
-            <div className="flex items-center">
-              <span className="mr-2">⏰</span> {event.time}
+
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-4">
+              {event.title}
+            </h1>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-gray-600 dark:text-gray-400 mb-6">
+              <div className="flex items-center">
+                <span className="mr-2">📅</span> {event.date}
+              </div>
+              <div className="flex items-center">
+                <span className="mr-2">⏰</span> {event.time}
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-2xl">📍</span>
+                <span className="text-gray-700 dark:text-gray-300">{event.location}</span>
+                <span className={`text-xs px-2 py-1 rounded-full ${
+                  event.locationType === 'online'
+                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
+                    : 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400'
+                }`}>
+                  {event.locationType === 'online' ? 'Online' : 'Real Life'}
+                </span>
+              </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-2xl">📍</span>
-              <span className="text-gray-700 dark:text-gray-300">{event.location}</span>
-              <span className={`text-xs px-2 py-1 rounded-full ${
-                event.locationType === 'online'
-                  ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
-                  : 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400'
-              }`}>
-                {event.locationType === 'online' ? 'Online' : 'Real Life'}
-              </span>
+
+            {event.locationType !== 'online' && event.location && (
+              <div className="mb-6">
+                <LocationMap location={event.location} />
+              </div>
+            )}
+
+            <p className="text-center text-gray-600 dark:text-gray-400 mb-6">
+              {event.description}
+            </p>
+
+            {/* Countdown Timer */}
+            {renderCountdown()}
+
+            {/* RSVP Buttons */}
+            {!showNameInput ? (
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button
+                  onClick={() => handleResponse("in")}
+                  disabled={isSubmitting || isExpired}
+                  className={`px-8 py-4 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${
+                    isSubmitting || isExpired ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  I'm In! 👍
+                </button>
+                <button
+                  onClick={() => handleResponse("maybe")}
+                  disabled={isSubmitting || isExpired}
+                  className={`px-8 py-4 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${
+                    isSubmitting || isExpired ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  Maybe 🤔
+                </button>
+                <button
+                  onClick={() => handleResponse("out")}
+                  disabled={isSubmitting || isExpired}
+                  className={`px-8 py-4 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${
+                    isSubmitting || isExpired ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  Can't Make It ��
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="max-w-md mx-auto">
+                <div className="mb-4">
+                  <label htmlFor="name" className="block text-gray-700 dark:text-gray-300 mb-2">Your Name</label>
+                  <input
+                    type="text"
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Enter your name (optional)"
+                    disabled={isSubmitting}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
+                  />
+                </div>
+                <div className="flex flex-row gap-4">
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className={`w-full px-8 py-4 rounded-xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                  >
+                    {isSubmitting ? 'Submitting...' : 'Submit'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowNameInput(false);
+                      setFormResponse(null);
+                      setIsSubmitting(false);
+                    }}
+                    disabled={isSubmitting}
+                    className={`w-full px-8 py-4 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium text-lg transition-all hover:shadow-lg ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            )}
+          </section>
+
+          {/* Attendees Section */}
+          <section className="max-w-3xl mx-auto">
+            <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500">
+              Who's In?
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+              {/* Going */}
+              <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-lg">
+                <h3 className="text-xl font-bold mb-4 text-green-600 dark:text-green-400 flex items-center">
+                  <span className="mr-2">👍</span> Going
+                </h3>
+                <ul className="space-y-4">
+                  {attendees
+                    .filter((a: any) => a.status === "in")
+                    .map((attendee: any, index: number) => (
+                      <li key={index} className="flex items-center gap-2">
+                        <span className="text-gray-800 dark:text-gray-200">{attendee.name}</span>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+
+              {/* Maybe */}
+              <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-lg">
+                <h3 className="text-xl font-bold mb-4 text-yellow-600 dark:text-yellow-400 flex items-center">
+                  <span className="mr-2">🤔</span> Maybe
+                </h3>
+                <ul className="space-y-4">
+                  {attendees
+                    .filter((a: any) => a.status === "maybe")
+                    .map((attendee: any, index: number) => (
+                      <li key={index} className="flex items-center gap-2">
+                        <span className="text-gray-800 dark:text-gray-200">{attendee.name}</span>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+
+              {/* Not Going */}
+              <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-lg">
+                <h3 className="text-xl font-bold mb-4 text-red-600 dark:text-red-400 flex items-center">
+                  <span className="mr-2">👎</span> Can't Make It
+                </h3>
+                <ul className="space-y-4">
+                  {attendees
+                    .filter((a: any) => a.status === "out")
+                    .map((attendee: any, index: number) => (
+                      <li key={index} className="flex items-center gap-2">
+                        <span className="text-gray-800 dark:text-gray-200">{attendee.name}</span>
+                      </li>
+                    ))}
+                </ul>
+              </div>
             </div>
-          </div>
 
-          <p className="text-center text-gray-600 dark:text-gray-400 mb-6">
-            {event.description}
-          </p>
-
-          {/* Countdown Timer */}
-          {renderCountdown()}
-
-          {/* RSVP Buttons */}
-          {!showNameInput ? (
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="text-center mb-12">
               <button
-                onClick={() => handleResponse("in")}
-                disabled={isSubmitting || isExpired}
-                className={`px-8 py-4 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${
-                  isSubmitting || isExpired ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
+                onClick={handleCopyLink}
+                className="px-8 py-4 rounded-xl bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 font-medium text-lg transition-all hover:shadow-lg border border-indigo-200 dark:border-indigo-800"
               >
-                I'm In! 👍
-              </button>
-              <button
-                onClick={() => handleResponse("maybe")}
-                disabled={isSubmitting || isExpired}
-                className={`px-8 py-4 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${
-                  isSubmitting || isExpired ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
-              >
-                Maybe 🤔
-              </button>
-              <button
-                onClick={() => handleResponse("out")}
-                disabled={isSubmitting || isExpired}
-                className={`px-8 py-4 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${
-                  isSubmitting || isExpired ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
-              >
-                Can't Make It 👎
+                <span className="flex items-center justify-center gap-2">
+                  <span>📋</span> Copy Invite Link
+                </span>
               </button>
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="max-w-md mx-auto">
-              <div className="mb-4">
-                <label htmlFor="name" className="block text-gray-700 dark:text-gray-300 mb-2">Your Name</label>
-                <input
-                  type="text"
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Enter your name (optional)"
-                  disabled={isSubmitting}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
+
+            {event && (
+              <div className="text-center mb-12 w-full flex justify-center items-center">
+                <SocialShareImage
+                  eventId={eventId || event.id}
+                  eventTitle={event.title}
+                  eventEmoji={event.emoji}
+                  eventDate={event.date}
+                  eventTime={event.time}
                 />
               </div>
-              <div className="flex flex-row gap-4">
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className={`w-full px-8 py-4 rounded-xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white font-medium text-lg transition-all hover:shadow-lg transform hover:-translate-y-1 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                >
-                  {isSubmitting ? 'Submitting...' : 'Submit'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowNameInput(false);
-                    setFormResponse(null);
-                    setIsSubmitting(false);
-                  }}
-                  disabled={isSubmitting}
-                  className={`w-full px-8 py-4 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium text-lg transition-all hover:shadow-lg ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          )}
-        </section>
-
-        {/* Attendees Section */}
-        <section className="max-w-3xl mx-auto">
-          <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500">
-            Who's In?
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            {/* Going */}
-            <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-lg">
-              <h3 className="text-xl font-bold mb-4 text-green-600 dark:text-green-400 flex items-center">
-                <span className="mr-2">👍</span> Going
-              </h3>
-              <ul className="space-y-4">
-                {attendees
-                  .filter((a: any) => a.status === "in")
-                  .map((attendee: any, index: number) => (
-                    <li key={index} className="flex items-center gap-2">
-                      <span className="text-gray-800 dark:text-gray-200">{attendee.name}</span>
-                    </li>
-                  ))}
-              </ul>
-            </div>
-
-            {/* Maybe */}
-            <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-lg">
-              <h3 className="text-xl font-bold mb-4 text-yellow-600 dark:text-yellow-400 flex items-center">
-                <span className="mr-2">🤔</span> Maybe
-              </h3>
-              <ul className="space-y-4">
-                {attendees
-                  .filter((a: any) => a.status === "maybe")
-                  .map((attendee: any, index: number) => (
-                    <li key={index} className="flex items-center gap-2">
-                      <span className="text-gray-800 dark:text-gray-200">{attendee.name}</span>
-                    </li>
-                  ))}
-              </ul>
-            </div>
-
-            {/* Not Going */}
-            <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-lg">
-              <h3 className="text-xl font-bold mb-4 text-red-600 dark:text-red-400 flex items-center">
-                <span className="mr-2">👎</span> Can't Make It
-              </h3>
-              <ul className="space-y-4">
-                {attendees
-                  .filter((a: any) => a.status === "out")
-                  .map((attendee: any, index: number) => (
-                    <li key={index} className="flex items-center gap-2">
-                      <span className="text-gray-800 dark:text-gray-200">{attendee.name}</span>
-                    </li>
-                  ))}
-              </ul>
-            </div>
-          </div>
-
-          <div className="text-center mb-12">
-            <button
-              onClick={handleCopyLink}
-              className="px-8 py-4 rounded-xl bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 font-medium text-lg transition-all hover:shadow-lg border border-indigo-200 dark:border-indigo-800"
-            >
-              <span className="flex items-center justify-center gap-2">
-                <span>📋</span> Copy Invite Link
-              </span>
-            </button>
-          </div>
-
-          {event && (
-            <div className="text-center mb-12 w-full flex justify-center items-center">
-              <SocialShareImage
-                eventId={eventId || event.id}
-                eventTitle={event.title}
-                eventEmoji={event.emoji}
-                eventDate={event.date}
-                eventTime={event.time}
-              />
-            </div>
-          )}
-        </section>
+            )}
+          </section>
+        </div>
       </div>
 
       {/* Footer */}

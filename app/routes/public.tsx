@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { useState, useEffect } from "react";
 import { getEvents } from "../../services/eventservice";
+import { LocationMap } from "../components/LocationMap";
 
 export function meta() {
   const siteUrl = "https://www.whos-in.com";
@@ -38,7 +39,7 @@ export default function PublicEvents() {
   const [events, setEvents] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalEvents, setTotalEvents] = useState(0);
-  const eventsPerPage = 6; // Changed to 6 to make it divisible by 2
+  const eventsPerPage = 6;
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -82,6 +83,10 @@ export default function PublicEvents() {
 
   const totalPages = Math.ceil(totalEvents / eventsPerPage);
 
+  // Separate events into real-life and online
+  const realLifeEvents = events.filter(event => event.locationType !== 'online');
+  const onlineEvents = events.filter(event => event.locationType === 'online');
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-pink-100 via-purple-100 to-indigo-100 dark:from-pink-950 dark:via-purple-950 dark:to-indigo-950 pt-24">
       <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
@@ -102,44 +107,97 @@ export default function PublicEvents() {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {events.map((event) => (
-                    <div key={event.id} className="bg-gray-50 dark:bg-gray-700 rounded-2xl p-6">
-                      <div className="flex flex-col h-full">
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center space-x-4">
-                            <span className="text-3xl">{event.emoji || "🎉"}</span>
-                            <div>
-                              <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">{event.name}</h3>
-                              <div className="flex flex-wrap items-center gap-2 text-gray-600 dark:text-gray-400">
-                                <span>📅 {event.date}</span>
-                                <span>🕒 {event.time}</span>
-                                <span>📍 {event.place}</span>
-                                <span className={`text-xs px-2 py-1 rounded-full ${
-                                    event.locationType === 'online'
-                                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
-                                        : 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400'
-                                }`}>
-                                    {event.locationType === 'online' ? 'Online' : 'Real Life'}
-                                </span>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {/* Real Life Events Column */}
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center">
+                      <span className="mr-2">📍</span> Real Life Events
+                    </h2>
+                    <div className="space-y-6">
+                      {realLifeEvents.map((event) => (
+                        <div key={event.id} className="bg-gray-50 dark:bg-gray-700 rounded-2xl p-6">
+                          <div className="flex flex-col h-full">
+                            <div className="flex items-center justify-between mb-4">
+                              <div className="flex items-center space-x-4">
+                                <span className="text-3xl">{event.emoji || "🎉"}</span>
+                                <div>
+                                  <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">{event.name}</h3>
+                                  <div className="flex flex-wrap items-center gap-2 text-gray-600 dark:text-gray-400">
+                                    <span>📅 {event.date}</span>
+                                    <span>🕒 {event.time}</span>
+                                    <span>📍 {event.place}</span>
+                                  </div>
+                                </div>
                               </div>
+                            </div>
+                            {event.description && (
+                              <p className="text-gray-600 dark:text-gray-400 mb-4 flex-grow">{event.description}</p>
+                            )}
+                            <div className="mb-4">
+                              <LocationMap location={event.place} />
+                            </div>
+                            <div className="mt-auto">
+                              <Link
+                                to={`/event/${event.id}`}
+                                className="w-full inline-block text-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
+                              >
+                                View Details
+                              </Link>
                             </div>
                           </div>
                         </div>
-                        {event.description && (
-                          <p className="text-gray-600 dark:text-gray-400 mb-4 flex-grow">{event.description}</p>
-                        )}
-                        <div className="mt-auto">
-                          <Link
-                            to={`/event/${event.id}`}
-                            className="w-full inline-block text-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
-                          >
-                            View Details
-                          </Link>
+                      ))}
+                      {realLifeEvents.length === 0 && (
+                        <div className="text-center text-gray-500 dark:text-gray-400 py-8">
+                          <p>No real-life events at the moment.</p>
                         </div>
-                      </div>
+                      )}
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Online Events Column */}
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center">
+                      <span className="mr-2">💻</span> Online Events
+                    </h2>
+                    <div className="space-y-6">
+                      {onlineEvents.map((event) => (
+                        <div key={event.id} className="bg-gray-50 dark:bg-gray-700 rounded-2xl p-6">
+                          <div className="flex flex-col h-full">
+                            <div className="flex items-center justify-between mb-4">
+                              <div className="flex items-center space-x-4">
+                                <span className="text-3xl">{event.emoji || "🎉"}</span>
+                                <div>
+                                  <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">{event.name}</h3>
+                                  <div className="flex flex-wrap items-center gap-2 text-gray-600 dark:text-gray-400">
+                                    <span>📅 {event.date}</span>
+                                    <span>🕒 {event.time}</span>
+                                    <span>💻 {event.place}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            {event.description && (
+                              <p className="text-gray-600 dark:text-gray-400 mb-4 flex-grow">{event.description}</p>
+                            )}
+                            <div className="mt-auto">
+                              <Link
+                                to={`/event/${event.id}`}
+                                className="w-full inline-block text-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
+                              >
+                                View Details
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      {onlineEvents.length === 0 && (
+                        <div className="text-center text-gray-500 dark:text-gray-400 py-8">
+                          <p>No online events at the moment.</p>
+                        </div>
+                        )}
+                    </div>
+                  </div>
                 </div>
 
                 <div className="mt-8 flex items-center justify-between">

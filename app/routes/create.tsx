@@ -2,6 +2,7 @@ import type { Route } from "./+types/create";
 import { Form, useNavigate } from "react-router";
 import { useState, useRef, useEffect } from "react";
 import { createEvent } from "../../services/eventservice";
+import { LocationInput } from "../components/LocationInput";
 
 export function meta({}: Route.MetaArgs) {
   const siteUrl = "https://www.whos-in.com";
@@ -55,6 +56,7 @@ export default function CreateEvent() {
   const [isPrivate, setIsPrivate] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [locationType, setLocationType] = useState<'real-life' | 'online' | null>(null);
+  const [locationValue, setLocationValue] = useState('');
 
   // Fix for time display consistency between server and client
   useEffect(() => {
@@ -481,44 +483,13 @@ export default function CreateEvent() {
                 <label htmlFor="location" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Location Type
                 </label>
-                <div className="relative">
-                  {!locationType ? (
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setLocationType('real-life')}
-                        className="flex-1 px-4 py-3 rounded-xl border transition-all bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                      >
-                        Real Life
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setLocationType('online')}
-                        className="flex-1 px-4 py-3 rounded-xl border transition-all bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                      >
-                        Online
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        id="location"
-                        name="location"
-                        required
-                        className="flex-1 px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                        placeholder={locationType === 'online' ? "e.g., Zoom, Google Meet, Discord" : "e.g., Local Park, Friend's House"}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setLocationType(null)}
-                        className="px-4 py-3 rounded-xl border transition-all bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 whitespace-nowrap"
-                      >
-                        Change
-                      </button>
-                    </div>
-                  )}
-                </div>
+                <LocationInput
+                  value={locationValue}
+                  onChange={setLocationValue}
+                  locationType={locationType}
+                  onLocationTypeChange={setLocationType}
+                />
+                <input type="hidden" name="location" value={locationValue} />
                 <input type="hidden" name="locationType" value={locationType || ''} />
               </div>
 
