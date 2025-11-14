@@ -109,7 +109,7 @@ export function SocialShareImage({ eventId, eventTitle, eventEmoji, eventDate, e
               </div>
               
               <p style={{ fontSize: '0.875rem', color: 'rgba(255, 255, 255, 0.8)', marginTop: '1rem', textAlign: 'center' }}>
-                Scan to RSVP or visit: whosin.app
+                Scan to RSVP or visit: whos-in.com
               </p>
             </div>
             
