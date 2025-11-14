@@ -163,8 +163,6 @@ export default function CreateEvent() {
       return null; // Don't render calendar on server
     }
     
-    // Calendar rendering logic here (existing code)
-    // ...
   };
 
   

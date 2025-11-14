@@ -277,7 +277,7 @@ export default function VotePage() {
         
 
         // Use the same data structure for the request
-        const response = await fetch('https://updateattendees-63rtehoika-uc.a.run.app', {
+        const response = await fetch('https://updateattendees-hcroxm72oa-uc.a.run.app', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

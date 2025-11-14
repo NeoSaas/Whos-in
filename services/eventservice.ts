@@ -76,7 +76,7 @@ export const createEvent = async (eventData: EventData): Promise<string> => {
     
     const signature = createSignature(eventData, timestamp, userId);
     
-    const response = await fetch('https://createevent-63rtehoika-uc.a.run.app', {
+    const response = await fetch('https://createevent-hcroxm72oa-uc.a.run.app', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
