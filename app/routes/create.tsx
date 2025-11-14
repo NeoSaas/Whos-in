@@ -190,7 +190,7 @@ export default function CreateEvent() {
       locationType: formData.get("locationType") as 'real-life' | 'online',
       emoji: formData.get("emoji") as string || "🎉",
       description: formData.get("description") as string,
-      private: formData.get("private") === "on",
+      private: isPrivate,
       attendees: [], // Initialize empty attendees array
       createdAt: new Date().toISOString(),
     };
