@@ -6,7 +6,7 @@ A simple, hassle-free event planning app that lets you create and share events w
 Thank you for so much interaction (if anyone sees this lol)
 <img width="1111" height="423" alt="image" src="https://github.com/user-attachments/assets/61a69ccb-d9c7-4077-9641-72665c030418" />
 
-Weve unfortunatley had to switch to a new firebase account so almost all previous events that have expired have all been wiped
+Weve unfortunatley had to switch to a new firebase project so almost all previous events that have expired have all been wiped
 
 ## About
 
