@@ -2,12 +2,13 @@ import type { Route } from "./+types/create";
 import { Form, useNavigate } from "react-router";
 import { useState, useRef, useEffect } from "react";
 import { createEvent } from "../../services/eventservice";
+import createOgImage from "../../public/og-create.png";
 
 export function meta({}: Route.MetaArgs) {
   const siteUrl = "https://www.whos-in.com";
   const title = "Create an Event | Who's In?";
   const description = "Create your free event in seconds. No login required, just share the link with friends to collect RSVPs instantly.";
-  const ogImage = `${siteUrl}/api/og?title=${encodeURIComponent(title)}`;
+  const ogImage = createOgImage;
   
   return [
     { title },

@@ -7,6 +7,7 @@ import { db } from "../../firebaseconfig";
 import type { MetaFunction } from "react-router";
 import { SocialShareImage } from "../components/SocialShareImage";
 import { getFunctions, httpsCallable } from "firebase/functions";
+import votePageOgImage from "../../public/og-image.png";
 import CryptoJS from 'crypto-js';
 
 const CLIENT_SECRET = "B&fB=ayO+?l9jM<";
@@ -33,7 +34,7 @@ export function meta({ params, data }: Route.MetaArgs & { data: Route.LoaderData
   
   const { event } = data;
   const eventUrl = `https://www.whos-in.com/event/${eventId}`;
-  const ogImageUrl = `https://www.whos-in.com/api/og?title=${encodeURIComponent(event.title)}`;
+  const ogImageUrl = votePageOgImage;
   
   return [
     { title: `${event.title} | Who's In?` },
