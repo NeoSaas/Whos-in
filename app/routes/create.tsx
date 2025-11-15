@@ -24,7 +24,7 @@ export function meta({}: Route.MetaArgs) {
     { property: "og:site_name", content: "Who's In?" },
     
     // Twitter Card tags
-    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:card", content: ogImage },
     { name: "twitter:title", content: title },
     { name: "twitter:description", content: description },
     { name: "twitter:image", content: ogImage },
