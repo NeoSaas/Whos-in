@@ -49,7 +49,7 @@ export function meta({ params, data }: Route.MetaArgs & { data: Route.LoaderData
     { property: "og:image:height", content: "630" },
     
     // Twitter Card tags
-    { name: "twitter:card", content: ogImageUrl },
+    { name: "twitter:card", content: "summary_large_image" },
     { name: "twitter:title", content: `${event.title} | Who's In?` },
     { name: "twitter:description", content: `RSVP to ${event.title} on ${event.date}${event.time ? ` at ${event.time}` : ''}. Join us!` },
     { name: "twitter:image", content: ogImageUrl },
