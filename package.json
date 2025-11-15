@@ -13,6 +13,7 @@
     "@react-router/serve": "^7.4.1",
     "@vercel/analytics": "^1.5.0",
     "@vercel/og": "^0.6.8",
+    "@vercel/react-router": "^1.2.3",
     "crypto-js": "^4.2.0",
     "firebase": "^11.5.0",
     "html2canvas": "^1.4.1",
