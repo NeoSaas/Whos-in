@@ -2,13 +2,12 @@ import { Link } from "react-router";
 import type { Route } from "./+types/landing";
 import { useState, useEffect } from "react";
 import { getEvents } from "../../services/eventservice";
-import landingOgImage from "../../public/og-home.png";
 
 export function meta({ }: Route.MetaArgs) {
     const siteUrl = "https://www.whos-in.com";
     const title = "Who's In? - Simple Event Planning Made Fun";
     const description = "Create events in seconds, share with anyone, and track RSVPs instantly. No login required, completely free.";
-    const ogImage = landingOgImage;
+    const ogImage = `https://www.whos-in.com/og-home.png`;
     
     return [
         { title },

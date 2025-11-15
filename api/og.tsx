@@ -24,7 +24,7 @@ export default function handler(req) {
         }}
       >
         <img 
-          src="https://whos-in.com/logo_white_no_background.png" 
+          src="https://www.whos-in.com/logo_white_no_background.png" 
           width="200" 
           height="200" 
           alt="Logo"

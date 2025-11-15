@@ -4,13 +4,12 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../firebaseconfig";
 import { getOrCreateUserId } from "../../services/eventservice";
 import type { Route } from "./+types/events";
-import eventsOgImage from "../../public/og-events.png";
 
 export function meta({}: Route.MetaArgs) {
   const siteUrl = "https://www.whos-in.com";
   const title = "My Events | Who's In?";
   const description = "View and manage all your created events. Track RSVPs, event details, and share your events with friends.";
-  const ogImage = eventsOgImage;
+  const ogImage = `https://www.whos-in.com/og-events.png`;
   
   return [
     { title },
